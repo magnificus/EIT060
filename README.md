@@ -7,6 +7,8 @@ Projektet består huvudsakligen av 3 delar:
 2. Server/databasen som blir ansluten till, och hanterar kommandon och privilegier.
 3. Säkerhetscertifikat.
 
-Lite l�nkar:
+
+Kul länkar:
 
 http://www.ibm.com/developerworks/java/tutorials/j-jsse/j-jsse.html
+http://www.onjava.com/pub/a/onjava/2001/05/03/java_security.html?page=2
