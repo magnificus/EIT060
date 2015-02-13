@@ -1,0 +1,5008 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Jeff Nisewanger, Mary Dageforde, Brad Wetmore">
+   <meta name="GENERATOR" content="Mozilla/4.61 [en] (Win98; U) [Netscape]">
+   <title>JSSE 1.0.3 Guide</title>
+   <!-- Changed by: Mary Dageforde, 14-Jul-00 -->
+   <!-- Changed by: Brad Wetmore, 20-Jul-00 -->
+   <!-- Changed by: Brad Wetmore, 18-Jul-01 -->
+   <!-- Changed by: Brad Wetmore, 25-Feb-02 -->
+   <!-- Changed by: Brad Wetmore, 11-Apr-02 -->
+</head>
+<BODY BGCOLOR="#ffffff">
+
+<hr WIDTH="100%">
+
+<center>
+
+<H1>Java<SUP><FONT SIZE=-2>TM</FONT></SUP> Secure Socket Extension
+(JSSE) 1.0.3</H1>
+
+<H1>API User's Guide</H1>
+
+</center>
+
+<blockquote>
+<blockquote>
+<hr WIDTH="100%">
+
+<STRONG>
+IMPORTANT NOTE:
+</STRONG>
+
+J2SE 1.3.1 has begun the Sun End of Life (EOL) process.  The EOL
+transition period is from 
+<strong>Oct 25, 2004</strong> until <strong>March 30, 2006</strong>.  With this
+notice, customers should now begin to move to current product versions.
+<p>
+JSSE 1.0.3_xx is an optional package for use with J2SE 1.3.1.  <strong>JSSE
+1.0.3_xx will EOL March 30, 2006</strong>, in alignment with J2SE 1.3.1.
+<p>
+During the EOL transition period, the products will be supported as per
+existing customer support agreements.  After this period, these products
+will no longer be supported by Sun.
+<p>
+<hr WIDTH="100%">
+<P>
+
+While we have made every effort to ensure that the information
+in this User's Guide is correct, we strongly encourage you
+to also review the <A
+ HREF="http://java.sun.com/j2se/1.4/docs/guide/security/jsse/JSSERefGuide.html">
+JSSE Reference Guide </A> for the 
+
+ <A
+HREF="http://java.sun.com/j2se/1.4">
+Java<SUP><FONT SIZE=-2>TM</FONT></SUP> 2 SDK, Standard Edition v 1.4 (J2SDK)
+</A>.
+
+<P>
+
+The 1.4 Reference Guide was based on this document, and was
+significantly enhanced with new sections, examples, and troubleshooting
+recommendations.  The differences between the JSSE in J2SDK v1.4 and
+the JSSE 1.0.x are also described.  Anyone wishing to write portable
+code for JSSE 1.0.x and J2SDK v1.4 should read the J2SDK v1.4
+document.
+
+<P>
+
+This implementation is NOT intended for use with the J2SDK v1.4 or
+higher, and should NOT be installed.
+
+<hr WIDTH="100%">
+</blockquote>
+</blockquote>
+
+
+<p><dl>
+
+<dt><dd><a href="#Introduction">
+<font size="+1"><b>Introduction</b></font>
+</a><dl>
+
+<dt><dd><a href="#Features">
+<font size="+1"><b>Features, Advantages, and Benefits</b></font>
+</a>
+<dt><dd><a href="#StandardAPI">
+<font size="+1"><b>JSSE 1.0.3 Standard API</b></font>
+</a>
+<dt><dd><a href="#RefAPI">
+<font size="+1"><b>JSSE 1.0.3 Reference Implementation API</b></font>
+</a>
+<dt><dd><a href="#SunJSSE">
+<font size="+1"><b>SunJSSE Provider </b></font>
+</a>
+<dt><dd><a href="#WhatsNew">
+<font size="+1"><b>What's New in JSSE 1.0.3</b></font>
+</a>
+<dt><dd><a href="#RelatedDocs">
+<font size="+1"><b>Related Documentation</b></font>
+</a>
+<dt><dd><a href="#Legal">
+<font size="+1"><b>Legal Notices</b></font>
+</a>
+</dl>
+<br>
+
+<dt><dd><a href="#Terms">
+<font size="+1"><b>Terms and Definitions</b></font>
+</a>
+<br>
+<br>
+
+<dt><dd><a href="#SSLOverview">
+<font size="+1"><b>Secure Sockets Layer (SSL) Protocol Overview</b></font>
+</a><dl>
+
+<dt><dd><a href="#WhySSL">
+<font size="+1"><b>Why Use SSL?</b></font>
+</a>
+<dt><dd><a href="#HowSSLWorks">
+<font size="+1"><b>How SSL Works</b></font>
+</a>
+</dl>
+<br>
+
+<dt><dd><a href="#KeyClasses">
+<font size="+1"><b>Key Classes</b></font>
+</a><dl>
+
+<dt><dd><a href="#CoreClasses">
+<font size="+1"><b>Core Classes and Interfaces</b></font>
+</a><dl>
+
+<dt><dd><a href="#SSLSocket">
+<b>SSLSocket and SSLServerSocket Classes</b>
+</a><dt><dd><a href="#SocketFactory">
+<b>SocketFactory and ServerSocketFactory Classes</b>
+</a><dt><dd><a href="#SSLSocketFactory">
+<b>SSLSocketFactory and SSLServerSocketFactory Classes</b>
+</a><dt><dd><a href="#SSLSession">
+<b>SSLSession Interface</b>
+</a></dl>
+
+<dt><dd><a href="#SupportClasses">
+<font size="+1"><b>Support Classes and Interfaces</b></font>
+</a><dl>
+
+<dt><dd><a href="#SSLSessionContext">
+<b>SSLSessionContext Interface</b>
+</a><dt><dd><a href="#SSLSessionBindingListener">
+<b>SSLSessionBindingListener Interface</b>
+</a><dt><dd><a href="#SSLSessionBindingEvent">
+<b>SSLSessionBindingEvent Class</b>
+</a><dt><dd><a href="#HandShakeCompletedListener">
+<b>HandShakeCompletedListener Interface</b>
+</a><dt><dd><a href="#HandShakeCompletedEvent">
+<b>HandShakeCompletedEvent Class</b>
+</a><dt><dd><a href="#X509Certificate">
+<b>X509Certificate Class</b>
+</a></dl>
+
+<dt><dd><a href="#ConfigurationClasses">
+<font size="+1"><b>Reference Implementation Classes and Interfaces</b></font>
+</a><dl>
+
+<dt><dd><a href="#SSLContext">
+<b>SSLContext Class</b>
+</a><dt><dd><a href="#TrustManagerFactory">
+<b>TrustManagerFactory Class</b>
+</a><dt><dd><a href="#X509TrustManager">
+<b>X509TrustManager Interface</b>
+</a><dt><dd><a href="#KeyManagerFactory">
+<b>KeyManagerFactory Class</b>
+</a><dt><dd><a href="#X509KeyManager">
+<b>X509KeyManager Interface</b>
+</a></dl>
+</dl>
+
+<br>
+
+
+<dt><dd><a href="#InstallationAndCustomization">
+<font size="+1"><b>Installing and Customizing JSSE 1.0.3 </b></font>
+</a><dl>
+
+<dt><dd><a href="#Installation">
+<font size="+1"><b>Installation</b></font>
+</a>
+<dt><dd><a href="#Customization">
+<font size="+1"><b>Customization</b></font>
+</a>
+</dl>
+
+<br>
+
+
+<dt><dd><a href="#KeystoreFormats">
+<font size="+1"><b>Additional Keystore Formats</b></font>
+</a>
+<br>
+<br>
+
+
+<dt><dd><a href="#Troubleshooting">
+<font size="+1"><b>Troubleshooting</b></font>
+</a>
+<br>
+<br>
+
+<dt><dd><a href="#CodeExamples">
+<font size="+1"><b>Code Examples</b></font>
+</a><dl>
+
+<dt><dd><a href="#UnsecureSecure">
+<font size="+1"><b>Converting an Unsecure Socket to a Secure Socket</b></font>
+</a>
+<dt><dd><a href="#SampleCode">
+<font size="+1"><b>Running the JSSE 1.0.3 Sample Code</b></font>
+</a>
+</dl>
+<br>
+<br>
+
+
+<dt><dd><a href="#AppA">
+<font size="+1"><b>Appendix A: Standard Names</b></font>
+</a>
+</dl>
+
+
+
+<hr WIDTH="100%">
+<a name="Introduction"></a>
+<h1>Introduction</h1>
+
+<blockquote>
+
+Data that travels across a network can easily be accessed by someone who
+is not the intended recipient. When the data includes private information,
+such as passwords and credit card numbers, steps must be taken to make
+the data unintelligible to unauthorized parties. It is also important to
+ensure the data has not been modified, either intentionally
+or unintentionally, during transport. The Secure Sockets
+Layer (SSL) and Transport Layer Security (TLS) protocols were designed
+to help protect the privacy and integrity of data while it is
+transferred across a network.
+
+<P> The Java Secure Socket Extension (JSSE) 1.0.3
+enables secure Internet communications. It provides a framework
+and a reference implementation for a Java version of the SSL and TLS
+protocols and includes functionality for data encryption, server
+authentication, message integrity, and optional client authentication.
+Using JSSE, developers can provide for the secure passage of data
+between a client and a server running any application protocol,
+such as Hypertext Transfer Protocol (HTTP), Telnet, or FTP,
+over TCP/IP. (For an introduction to SSL, see
+<A HREF="#SSLOverview">Secure Sockets Layer (SSL) Protocol Overview</A>.)
+
+<P> By abstracting the complex underlying
+security algorithms and &quot;handshaking&quot; mechanisms, JSSE
+minimizes the risk of creating subtle, but dangerous security
+vulnerabilities. Furthermore, it simplifies application development
+by serving as a building block which developers can integrate
+directly into their applications.
+
+<P> JSSE 1.0.3 supplements the
+Java<SUP><FONT SIZE=-2>TM</FONT></SUP> 2 SDK, Standard Edition (J2SDK)
+by providing extended networking socket classes. It also provides a socket
+factory framework for encapsulating socket creation behavior and provides
+a limited public key certificate API that is compatible with JDK1.1-based
+platforms.
+
+<P> JSSE 1.0.3 provides both an application programming interface (API)
+framework and a non-commercial reference implementation that demonstrates
+a working example of the JSSE API.
+The API is provided in the standard extension (optional package)
+<code>javax</code> namespace.
+It is an API for secure sockets, socket factories, and
+public key certificates.
+The reference implementation also include some classes which are
+specific to this implementation and appear
+in the <code>com.sun.net.ssl</code> package.
+<A HREF="#RefVsProd">
+Difference Between Reference Implementation and Commercial Product</A>
+describes the differences between a reference implementation and
+a commercial product.
+
+<P> The JSSE 1.0.3 API is
+capable of supporting SSL versions 2.0 and 3.0 and Transport Layer
+Security (TLS) 1.0. These security protocols encapsulate a normal
+bidirectional stream socket and the JSSE 1.0.3 API adds
+transparent support for authentication, encryption, and
+integrity protection. The JSSE reference implementation implements
+SSL 3.0 and TLS 1.0. It does not implement SSL 2.0.
+
+<P> JSSE 1.0.3 is an optional security component of the Java 2
+platform.  It builds on the security architecture in the core Java 2
+platform. Other security components in the Java 2 platform include the
+Java Cryptography Extension (<A
+href="http://java.sun.com/products/jce/">JCE</A>), the Java
+Authentication and Authorization Service (<A
+href="http://java.sun.com/products/jaas/">JAAS</A>), and the <A
+href="http://java.sun.com/j2se/1.3/docs/tooldocs/tools.html#security">
+Java Security Tools</A>.  JSSE 1.0.3 encompasses many of the same
+concepts and algorithms as those in JCE but automatically applies them
+underneath a simple stream socket API extension.
+
+<P> JSSE 1.0.3 is based on the same <a
+href="http://java.sun.com/j2se/1.3/docs/guide/security/CryptoSpec.html#Design">design
+principles</a> found elsewhere in the Java Cryptography Architecture
+framework utilized by all the cryptography-related security components
+of the Java 2 platform: implementation independence and, whenever
+possible, algorithm independence. It uses the same "<a
+href="http://java.sun.com/j2se/1.3/docs/guide/security/CryptoSpec.html#ProviderArch">provider</a>"
+architecture.
+
+<P> JSSE 1.0.3 is designed to allow other implementations of certain
+classes to be plugged in seamlessly, thus providing alternate protocol
+and Public Key Infrastructure (PKI) implementations.  (Note: there are
+currently a number of restrictions on pluggability, especially for
+non-domestic users. Basically, it is not possible for global users to
+use <code>SSLSocketFactory</code>, or
+<code>SSLServerSocketFactory</code> implementations other than the ones
+supplied by the <code>SunJSSE</code> provider.  See <a
+href="#Customization">Customization</a>.)
+
+
+<blockquote>
+<blockquote>
+<hr>
+<a name="RefVsProd"></a>
+<font size="-1">
+<H4>Difference Between Reference Implementation
+and Commercial Product</H4>
+
+
+<P> Sun's JSSE 1.0.3 implementation is a reference implementation.
+A reference implementation is intended to familiarize developers with the APIs
+and the technology before developers make their choice on commercial
+implementations. A reference implementation is similar to a proof-of-concept
+implementation of a specification. It is used to demonstrate that the
+specification is implementable and that various compatibility tests can be
+written against it.
+
+<P> A non-commercial implementation typically lacks the overall
+&quot;polish&quot; and completeness of a commercial-grade product. While the
+implementation does meet the API specification, it will be lacking things such
+as a fully-featured toolkit, sophisticated debugging tools, commercial-grade
+documentation and regular maintenance updates.
+</font>
+<hr>
+</blockquote>
+</blockquote>
+
+
+
+<a name="Features"></a>
+<H2>Features, Advantages, and Benefits</H2>
+
+<blockquote>
+
+<P> JSSE 1.0.3 includes the following important features:
+
+<ul>
+<li>Implemented in 100% Pure Java<P>
+
+<li>Can be exported to most countries<P>
+
+<li>Provides API support for SSL versions 2.0 and 3.0, and
+reference implementation of SSL version 3.0<P>
+
+<li>Provides API support and a reference implementation for TLS version 1.0<P>
+
+<li>Includes classes that can be instantiated to create secure
+channels (<code>SSLSocket</code> and <code>SSLServerSocket</code>)<P>
+
+<li>Provides support for <a href="#CipherSuite">cipher suite</a> negotiation,
+which is part of the SSL handshaking used to initiate or verify
+secure communications<P>
+
+<li>Provides support for client and server authentication,
+which is part of the normal SSL handshaking
+<P>
+
+<li>Provides support for Hypertext Transfer Protocol (HTTP)
+encapsulated in the SSL protocol (HTTPS), which allows
+access to data such as web pages using HTTPS
+<P>
+
+<li>Provides server session management APIs to manage
+memory-resident SSL sessions
+<P>
+
+<li>Includes code licensed from RSA Data Security Inc.
+such as RSA and RC4
+<P>
+
+<li>Provides support for several cryptographic algorithms commonly
+used in cipher suites, including those
+listed in the following table:
+
+</ul>
+<br>
+
+<TABLE>
+<CAPTION>
+<H3 CLASS="TableTitle">
+Cryptographic Functionality Available With JSSE 1.0.3</H3>
+</CAPTION>
+<TR>
+<TH ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellHeading">
+Cryptographic Algorithm
+</TH>
+<TH ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellHeading">
+Cryptographic Process
+</TH>
+<TH ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellHeading">
+Key Lengths (Bits)
+</TH>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1" VALIGN="TOP">
+<P>RSA public key
+</TD>
+<TD ROWSPAN="1" COLSPAN="1" VALIGN="TOP">
+<P>Authentication and key agreement
+</TD>
+<TD ROWSPAN="1" COLSPAN="1" VALIGN="TOP">
+<P>2048 (authentication)<BR>
+2048 (key agreement)<BR>
+&nbsp;&nbsp;512 (key agreement)
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1" VALIGN="TOP">
+<P>RC4
+</TD>
+<TD ROWSPAN="1" COLSPAN="1" VALIGN="TOP">
+<P>Bulk encryption
+</TD>
+<TD ROWSPAN="1" COLSPAN="1" VALIGN="TOP">
+<P>128<BR>
+128 (40 effective)
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1" VALIGN="TOP">
+<P>DES
+</TD>
+<TD ROWSPAN="1" COLSPAN="1" VALIGN="TOP">
+<P>Bulk encryption
+</TD>
+<TD ROWSPAN="1" COLSPAN="1" VALIGN="TOP">
+<P>64 (56 effective)<BR>
+64 (40 effective)
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1" VALIGN="TOP">
+<P>Triple DES
+</TD>
+<TD ROWSPAN="1" COLSPAN="1" VALIGN="TOP">
+<P>Bulk encryption
+</TD>
+<TD ROWSPAN="1" COLSPAN="1" VALIGN="TOP">
+<P>192 (112 effective)
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1" VALIGN="TOP">
+<P>Diffie-Hellman public key
+</TD>
+<TD ROWSPAN="1" COLSPAN="1" VALIGN="TOP">
+<P>Key agreement
+</TD>
+<TD ROWSPAN="1" COLSPAN="1" VALIGN="TOP">
+<P>1024<BR>
+&nbsp;&nbsp;512
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1" VALIGN="TOP">
+<P>DSA public key
+</TD>
+<TD ROWSPAN="1" COLSPAN="1" VALIGN="TOP">
+<P>Authentication
+</TD>
+<TD ROWSPAN="1" COLSPAN="1" VALIGN="TOP">
+<P>1024
+</TD>
+</TR>
+</TABLE>
+
+<br>
+<br>
+
+</blockquote>
+
+
+<a name="StandardAPI"></a>
+<H2>JSSE 1.0.3 Standard API</H2>
+
+<blockquote>
+
+<P> The JSSE 1.0.3 standard API, available in the
+<code>javax.net</code>, <code>javax.net.ssl</code> and
+<code>javax.security.cert</code> packages, covers:
+
+<ul>
+
+<li>Secure (SSL) sockets and server sockets.<P>
+
+<li>Factories for creating sockets, server sockets,
+SSL sockets, and SSL server sockets.
+Using socket factories you can encapsulate socket creation
+and configuration behavior.<P>
+
+<li>Public key certificate API compatible with
+JDK 1.1-based platforms.
+
+</ul>
+
+<STRONG>Note:</STRONG>  The JSSE 1.0.3 API is compatible with the JSSE
+API found in the J2SDK v1.4.  For more information, please see the <A
+HREF="http://java.sun.com/j2se/1.4/docs/guide/security/jsse/JSSERefGuide.html">
+JSSE Reference Guide for J2SDK v1.4</A>.
+
+</blockquote>
+
+
+
+<a name="RefAPI"></a>
+<H2>JSSE 1.0.3 Reference Implementation API</H2>
+
+<blockquote>
+
+<P> The JSSE 1.0.3 reference implementation includes a non-standard API
+in the <code>com.sun.net.ssl</code> package. At this time, this API
+is implementation-specific and not guaranteed to be available in all
+implementations of JSSE.
+
+<P> This API contains classes and interfaces related to creating and
+configuring secure
+socket factories. These include key and trust manager interfaces
+(including X.509-specific key and trust managers),
+factories for creating key and trust managers,
+a class representing a secure socket protocol implementation
+that acts as a factory for secure socket factories,
+and a class for an HTTP URL connection with support for
+HTTPS-specific features.
+
+</blockquote>
+
+
+<a name="SunJSSE"></a>
+<H2><code>SunJSSE</code> Provider </H2>
+
+<blockquote>
+
+<p>The JSSE 1.0.3 reference implementation release comes standard with a
+provider named "<code>SunJSSE</code>", which must be
+<a href="#InstallationAndCustomization">installed</a> and
+<a href="#ProviderCust">registered</a>
+and which supplies the following cryptographic services:
+
+<ul>
+<li>
+RSA support for the signature-related JCA features
+of the Java 2 platform.</li><P>
+
+<li>
+An implementation of the SSL 3.0 and TLS 1.0 security protocols.</li><P>
+
+<li>
+An implementation of the most common SSL and TLS cipher suites
+which encompass a combination of authentication, key agreement,
+encryption and integrity protection.</li><P>
+
+<li>
+An implementation of an X.509-based key manager which chooses appropriate
+authentication keys from a standard JCA KeyStore.</li><P>
+
+<li>
+An implementation of an X.509-based trust manager which implements a subset
+of the RFC 2459 rules for certificate chain path validation.</li><P>
+
+<li>
+An implementation of PKCS12 as JCA keystore type "pkcs12".</li>
+
+</ul>
+
+</blockquote>
+
+<a name="WhatsNew"></a>
+<H2>What's New in JSSE 1.0.3</H2>
+
+<blockquote>
+
+<P> Here are the main differences between JSSE 1.0.2 and JSSE 1.0.3:
+<ul>
+
+<li>
+The system property "com.sun.net.ssl.dhKeyExchangeFix" was
+incorrectly defaulting to "false" in JSSE 1.0.2.  The
+SSL_DHE_DSS_* suites continued to encode the DSA signatures
+incorrectly.  (See below.)  JSSE 1.0.3 now sets this
+property to true, and is compatible with other SSL
+implementations.
+
+<P>
+
+Note:  JSSE in the J2SDK v1.4 also has this switch set to
+"true."  However, if contacting a previous JSSE release,
+switches on both sides should be set the same.
+
+<P>
+<li>
+The JSSE 1.0.3 jar files are now signed.  Crypto-strength and
+pluggability information are available in the jar's
+manifest.
+
+<P>
+<li>
+There are many enhancements to the default X509TrustManager
+implementation.
+
+<P>
+<li>
+The HttpsURLConnection implementation class now
+rereads the configuration system properties such as
+"https.proxyHost", "https.proxyPort", "https.cipherSuites",
+etc. before each connection, instead of once at class
+instantiation.
+
+<P>
+<li>
+There were several robustness and performance enhancements.
+
+</ul>
+
+</blockquote>
+
+<H2>What's New in JSSE 1.0.2</H2>
+
+<blockquote>
+<P> Here are the differences between JSSE 1.0.1 and JSSE 1.0.2:
+
+<ul>
+<li><a href="#StrongCrypto">Stronger Cryptography in Global Version</a><P>
+<li><a href="#PJava">Runs on PersonalJava 3.1</a><P>
+<li><a href="#BugFixes">Bug Fixes</a><P>
+<li><a href="#DocChanges">Documentation Improvements</a>
+</ul>
+
+<H2><a name="StrongCrypto">Stronger Cryptography in Global Version</a></H2>
+
+<blockquote>
+
+<P> Recent changes in U.S. export regulations have enabled inclusion of
+stronger cryptographic algorithms in the global version of JSSE
+1.0.2 & 1.0.3 than were possible in JSSE 1.0.1.  As a matter of fact, the
+same cryptographic suites are now included in both the domestic and
+global versions of JSSE 1.0.2 & 1.0.3.  The only difference between the
+two versions is the <a href="#Customization">pluggability</a>.
+
+</blockquote>
+
+<H2><a name="PJava">Runs on PersonalJava<SUP><FONT SIZE="-2">TM</FONT></SUP>
+version 3.1</a></H2>
+
+<blockquote>
+
+<P> The JSSE 1.0.2 reference implementation was slightly modified to enable it
+to be run on PersonalJava<SUP><FONT SIZE="-2">TM</FONT></SUP> version 3.1.
+The modifications do not affect the JSSE 1.0.2 API.
+
+<P> A new <code>SSLPermission</code> class was created, in the
+<code>com.sun.net.ssl</code> package.  In JSSE 1.0.1, there were
+JSSE-specific permission checks which used
+<code>java.net.NetPermission</code>, when in fact the checks should
+have been more specific to JSSE.  <code>SSLPermission</code> replaces
+those <code>NetPermission</code> access control checks (i.e.
+<code>SSLSession.getSessionContext()</code>, and
+<code>HttpsURLConnection.setHostnameVerifier()</code>).
+
+<P> One thing to note is that the JSSE 1.0.2 reference implementation code
+that previously depended on <code>java.net.NetPermission</code> now
+depends on <code>com.sun.net.ssl.SSLPermission</code> instead.  Thus,
+if you previously granted <code>java.net.NetPermission</code> for any
+JSSE-specific checks to any application classes (e.g., in a policy
+file), you now need to grant <code>com.sun.net.ssl.SSLPermission</code>
+instead.
+
+</blockquote>
+
+
+<H2><a name="BugFixes">Bug Fixes</a></H2>
+
+<blockquote>
+
+<P> The JSSE 1.0.2 release contained a number of bug fixes,
+including the ones listed below.
+
+<ul>
+
+<li>An X.509 certificate bug in the releases prior to JDK 1.3
+caused SSL negotiations to fail. If a received certificate
+contained an undefined PathLen in one of its BasicConstraints,
+an application would report
+
+<pre>
+    javax.net.ssl.SSLException: untrusted server cert chain
+</pre>
+
+<P> In JSSE 1.0.2 the exception is no longer thrown when
+a certificate has an undefined PathLen in a BasicConstraint.
+
+<P>
+
+<li>There is enhanced debugging support for the
+<code>X509KeyManager</code> and <code>X509TrustManager</code> supplied
+by the "<code>SunJSSE</code>" provider, and for the default
+<code>SSLContext</code>. See <a href="#Debug">Debugging Utilities</a>
+for information about dynamic debug tracing support.<P>
+
+<li>The certificate for "duke" in the sample code's keystore was
+reissued. In prior versions of JSSE, the duke certificate
+was issued using the DSA algorithm, making it difficult
+for people trying to run the samples with the Netscape Navigator or
+Internet Explorer browsers as the client, because those browsers
+expect the server certificates to be RSA-based. In JSSE 1.0.2,
+the "duke" certificate has been issued using the RSA algorithm.
+
+<P>
+
+<li> In JSSE 1.0.1, the search for a <a href="#Stores">truststore</a>
+was handled inconsistently.  All searches for a truststore are now
+handled the same:  they check for a file specified by the
+<code>javax.net.ssl.trustStore</code> system property first, followed
+by <code>jssecacerts</code> and <code>cacerts</code>, using whichever
+file is found first.
+
+</ul>
+
+</blockquote>
+
+
+<H2><a name="DocChanges">Documentation Improvements</a></H2>
+
+<blockquote>
+
+<P> This JSSE API User's Guide was substantially expanded and clarified.
+
+</blockquote>
+
+</blockquote>
+
+
+<a name="RelatedDocs"></a>
+<H2>Related Documentation </H2>
+
+<blockquote>
+
+<H3>Java Secure Socket Extension Documentation</H3>
+
+<ul>
+
+<LI>JSSE product homepage - <BR>
+<EM>
+<A HREF="http://java.sun.com/products/jsse/">
+http://java.sun.com/products/jsse/</A>
+</EM>
+</LI><P>
+
+<LI>J2SDK v1.4 JSSE documentation - <BR>
+<EM>
+<A HREF="http://java.sun.com/j2se/1.4/docs/guide/security/jsse/JSSERefGuide.html">
+http://java.sun.com/j2se/1.4/docs/guide/security/jsse/JSSERefGuide.html</A>
+</EM>
+</LI><P>
+
+<LI>JSSE frequently asked questions -<BR>
+<EM>
+<A HREF="http://java.sun.com/products/jsse/FAQ.html">
+http://java.sun.com/products/jsse/FAQ.html</A>
+</EM>
+</LI><P>
+
+<LI>Archive of questions and answers posted to the Sun's Java Security
+team through <EM> java-security@sun.com</EM>
+
+ - <BR>
+<EM>
+<A HREF="http://archives.java.sun.com/archives/java-security.html">
+http://archives.java.sun.com/archives/java-security.html</A>
+</EM>
+</LI><P>
+
+<LI>JSSE API documentation -<BR>
+<EM>
+<A HREF="http://java.sun.com/products/jsse/doc/apidoc/index.html">
+http://java.sun.com/products/jsse/doc/apidoc/index.html</A>
+</EM>
+</LI><P>
+
+<LI>JSSE slides presented at JavaOne<SUP><FONT SIZE=-2>SM</FONT></SUP>
+(look for "Presentations") -
+<BR>
+<EM>
+<A HREF="http://java.sun.com/security/">
+http://java.sun.com/security/</A>
+</EM>
+</LI><P>
+
+<LI>Older JSSE JavaOne<SUP><FONT SIZE=-2>SM</FONT></SUP> Slides from
+1999 -
+<BR>
+<EM>
+<A HREF="http://java.sun.com/products/jsse/J1/index.htm">
+http://java.sun.com/products/jsse/J1/index.htm</A>
+</EM>
+</LI>
+
+</UL>
+
+<H3>
+Java 2 Platform Security Documentation</H3>
+
+<UL>
+
+<LI>Java 2 security homepage -<BR>
+<EM>
+<A HREF="http://java.sun.com/security/">
+http://java.sun.com/security/</A>
+</EM>
+</LI><P>
+
+<LI>Links to more Java 2 platform security documents -<BR>
+<EM>
+<A HREF="http://java.sun.com/j2se/1.3/docs/guide/security/">
+http://java.sun.com/j2se/1.3/docs/guide/security/</A>
+</EM>
+</LI><P>
+
+<LI>Tutorial for Java 2 platform security -<BR>
+<EM>
+<A HREF="http://java.sun.com/docs/books/tutorial/security1.2/">
+http://java.sun.com/docs/books/tutorial/security1.2/</A>
+</EM>
+</LI><P>
+
+<LI>Book on Java 2 platform security -<BR>
+<EM>
+Inside Java 2 Platform Security: Architecture, API Design, and
+Implementation - Second Edition</EM>
+by Li Gong, Gary Ellison, and Mary Dageford.
+Addison Wesley, Inc., 2003. ISBN: 0-201-78791-1.
+</LI>
+
+</UL>
+
+
+<H3>Export Issues Related to Cryptography</H3>
+
+<blockquote>
+
+<P>
+For information on U.S. encryption policies, refer to these Web sites:
+
+<UL>
+
+<LI>U.S. Department of Commerce - <BR>
+<EM>
+<A HREF="http://www.doc.gov/">
+http://www.doc.gov/</A>
+</EM>
+</LI><P>
+
+<LI>Export Policy Resource Page - <BR>
+<EM>
+<A HREF="http://www.crypto.com/">
+http://www.crypto.com/</A>
+</EM>
+</LI><P>
+
+<LI>Computer Systems Public Policy - <BR>
+<EM>
+<A HREF="http://www.cspp.org/">
+http://www.cspp.org/</A>
+</EM>
+</LI><P>
+
+<LI>Federal Information Processing Standards Publications (FIPS PUBS)
+homepage, which has links to the Data Encryption Standard (DES) -<BR>
+<EM>
+<A HREF="http://www.itl.nist.gov/fipspubs/">
+http://www.itl.nist.gov/fipspubs/</A>
+</EM>
+</LI><P>
+
+<LI>Revised U.S. Encryption Export Control Regulations -<BR>
+<EM>
+<A HREF="http://www.epic.org/crypto/export_controls/regs_1_00.html">
+http://www.epic.org/crypto/export_controls/regs_1_00.html</A>
+</EM>
+</LI>
+
+</UL>
+
+<P>For more information about other cryptographic issues, refer to
+these Web sites:
+
+<UL>
+
+<LI>Bruce Schneier's site - <BR>
+<EM>
+<A HREF="http://www.counterpane.com/">
+http://www.counterpane.com/</A>
+</EM>
+</LI><P>
+
+<LI>Gene Spafford's site - <BR>
+<EM>
+<A HREF="http://www.cs.purdue.edu/coast/coast.html">
+http://www.cs.purdue.edu/coast/coast.html</A>
+</EM>
+</LI>
+
+</UL>
+
+</blockquote>
+
+
+<a name="SSLDocs"></a>
+<H3>Secure Sockets Layer Documentation</H3>
+
+<blockquote>
+
+<P>Online resources:
+
+<UL>
+
+<LI>Documentation from Netscape about SSL - <BR>
+<EM>
+<A HREF="http://developer.netscape.com/docs/manuals/security.html#SS">
+http://developer.netscape.com/docs/manuals/security.html#SS</A>
+</EM>
+</LI><P>
+
+<LI>Introduction to SSL from iPlanet - <BR>
+<EM>
+<A HREF="http://www.iplanet.com/developer/docs/articles/security/ssl.html">
+http://www.iplanet.com/developer/docs/articles/security/<BR>
+ssl.html</A>
+</EM>
+</LI><P>
+
+<LI>The SSL Protocol version 3.0 Internet Draft -<BR>
+<EM>
+<A HREF="http://home.netscape.com/eng/ssl3/ssl-toc.html">
+http://home.netscape.com/eng/ssl3/ssl-toc.html</A>
+</EM>
+</LI><P>
+
+<LI>The TLS Protocol version 1.0 Internet Draft - <EM>
+<A HREF="http://www.ietf.org/rfc/rfc2246.txt">
+http://www.ietf.org/rfc/rfc2246.txt</A>
+</EM>
+</LI>
+
+</UL>
+
+
+<P>Books:
+
+<UL>
+
+<LI><EM> SSL and TLS: Designing and Building Secure Systems </EM> by Eric
+Rescorla. Addison Wesley Professional, 2000. </LI><P>
+
+<LI><EM>
+SSL and TLS Essentials: Securing the Web</EM>
+ by Stephen Thomas. John Wiley and Sons, Inc., 2000.</LI><P>
+
+<LI><EM> Java 2 Network Security</EM> , Second Edition, by Marco
+Pistoia, Duane F Reller, Deepak Gupta, Milind Nagnur, and Ashok K
+Ramani. Prentice Hall, 1999. Copyright 1999 International Business
+Machines.</LI>
+
+</UL>
+
+</blockquote>
+</blockquote>
+
+<a name="Legal"></a>
+<H2> Legal Notices </H2>
+
+<blockquote>
+<A HREF="../../LICENSE.html"> Binary Code License </A>
+<BR>
+<A HREF="../../COPYRIGHT.txt"> Proprietary Rights Notices </A>
+
+</blockquote>
+
+</blockquote>
+
+
+<a name="Terms"></a>
+<H1>Terms and Definitions</H1>
+
+<blockquote>
+
+<P> There are several terms relating to cryptography that are used
+within this document. This section defines some of these
+terms.
+
+<H2>Authentication</H2>
+<i>Authentication</i> is the process of confirming the identity of a
+party with whom one is communicating.
+
+<H2><a name="CipherSuite">Cipher Suite</a></H2>
+A <i>cipher suite</i> is a combination of cryptographic parameters
+that define the security algorithms and key sizes used for
+authentication, key agreement, encryption, and integrity protection.
+
+<H2>Certificate</H2>
+A <i>certificate</i> is a digitally signed statement vouching for
+the identity and public key of an entity (person, company, etc.).
+Certificates can either be self-signed or issued by a Certification
+Authority (CA).  Certification Authorities are entities that are
+trusted to issue valid certificates for other entities.  Well-known CAs
+include VeriSign, Entrust, and GTE CyberTrust.  X509 is a common
+certificate format, and they can be managed by the JDK's keytool.
+
+<H2>Cryptographic Hash Function</H2>
+A <i>cryptographic hash function</i> is similar to a checksum. Data is
+processed with an algorithm that produces a relatively small string of
+bits called a hash. A cryptographic hash function has three primary
+characteristics: it is a one-way function, meaning that it is not
+possible to produce the original data from the hash; a small change in
+the original data produces a large change in the resulting hash; and it
+does not require a cryptographic key.
+
+<H2>Cryptographic Service Provider</H2>
+In the JCA, implementations for various cryptographic algorithms are
+provided by <i>cryptographic service providers</i>, or "<a
+href="http://java.sun.com/j2se/1.3/docs/guide/security/CryptoSpec.html#ProviderArch">providers</a>"
+for short. Providers are essentially packages that implement one or
+more engine classes for specific algorithms.  An engine class defines a
+cryptographic service in an abstract fashion without a concrete
+implementation.
+
+<H2>Digital Signature</H2>
+A <i>digital signature</i> is the digital equivalent of a handwritten
+signature. It is used to ensure that data transmitted over a network
+was sent by whoever claims to have sent it and that the data has not
+been modified in transit. For example, an RSA-based digital signature
+is calculated by first computing a cryptographic hash of the data and
+then encrypting the hash with the sender's private key.
+
+<H2>Encryption and Decryption</H2>
+<i>Encryption</i> is the process of using a complex algorithm to
+convert an original message, or <i>cleartext</i>, to an encoded
+message, called <i>ciphertext</i>, that is unintelligible unless it is
+decrypted. <i>Decryption</i> is the inverse process of producing
+cleartext from ciphertext. The algorithms used to encrypt and decrypt
+data typically come in two categories:  secret key (symmetric)
+cryptography and public key (asymmetric) cryptography.
+
+<H2>Handshake Protocol</H2>
+The negotiation phase during which the two socket peers agree to use a
+new or existing session. The <i>handshake protocol</i> is a series of
+messages exchanged over the record protocol. At the end of the
+handshake new connection-specific encryption and integrity protection
+keys are generated based on the key agreement secrets in the session.
+
+<H2>Key Agreement</H2>
+<i>Key agreement</i> is a protocol by which 2 or more parties can
+establish the same cryptographic keys, without having to exchange any
+secret information in the clear.  Examples include RSA and
+Diffie-Hellman.<p>
+
+<H2>Key Managers and Trust Managers</H2>
+<P> <i>Key managers</i> (see <a href=
+"#KeyManagerFactory"><code>KeyManagerFactory</code></a>) and <i>trust
+managers</i> (see <a href=
+"#TrustManagerFactory"><code>TrustManagerFactory</code></a>) use
+keystores for their key material.  A key manager manages a keystore and
+supplies public keys to others as needed, e.g., for use in
+authenticating the user to others.  A trust manager makes decisions
+about who to trust based on information in the truststore it manages.
+
+<a name="Stores"></a>
+<H2>Keystores and Truststores</H2>
+
+<P> A <i>keystore</i> is a database of key material.  Key material is
+used for a variety of purposes, including authentication and data
+integrity.  There are various types of keystores available, including
+"PKCS12" and Sun's "JKS."
+
+<P> Generally speaking, keystore information can be grouped into two
+different categories:  key entries and trusted certificate entries.  A
+key entry consists of an entity's identity and its private key,
+and can be used for a variety of cryptographic purposes.  In contrast,
+a trusted certificate entry only contains a public key in addition to
+the entity's identity.  Thus, a trusted certificate entry can not be
+used where a private key is required, such as in a
+<code>com.sun.net.ssl.KeyManager</code>.  In the JDK implementation of
+"JKS", a keystore may contain both keyEntry's and trustedCertEntry's.
+
+<P> A <i>truststore</i> is a keystore which is used when making decisions
+about what to trust.  If you receive some data from an entity that
+you already trust, and if you can verify that the entity is the one it
+claims to be, then you can assume that the data really came from that
+entity.
+
+<P> An entry should only be added to a truststore if the user makes a
+decision to trust that entity.  By either generating a keypair or by
+importing a certificate, the user has given trust to that entry, and
+thus any entry in the keystore is considered a trusted entry.
+
+<P> It may be useful to have two different keystore files:  one
+containing just your key entries, and the other containing your trusted
+certificate entries, including Certification Authority (CA)
+certificates.  The former contains private information, while the
+latter does not.  Using two different files instead of a single
+keystore file provides for a cleaner separation of the logical
+distinction between your own certificates (and corresponding private
+keys) and others' certificates.  You could provide more protection for
+your private keys if you store them in a keystore with restricted
+access, while providing the trusted certificates in a more publicly
+accessible keystore if needed.
+
+
+<H2>Message Authentication Code</H2>
+A <i>Message Authentication Code</i> (MAC) provides a way to check the
+integrity of information transmitted over or stored in an unreliable
+medium, based on a secret key. Typically, MACs are used between two
+parties that share a secret key in order to validate information
+transmitted between these parties.
+
+<P> A MAC mechanism that is based on cryptographic hash
+functions is referred to as HMAC. HMAC can be used with
+any cryptographic hash function, such as Message Digest 5
+(MD5) and Secure Hash Algorithm (SHA), in combination
+with a secret shared key. HMAC is
+specified in RFC 2104.
+
+
+<H2>Public Key Cryptography</H2>
+<i>Public key cryptography</i> uses an encryption algorithm in
+which two keys are produced. One key is made public while
+the other is kept private. The public key and the private key
+are cryptographic inverses; what one key encrypts only the
+other key can decrypt. Public key cryptography is also called
+asymmetric cryptography.
+
+<H2> Record Protocol</H2>
+The <i>record protocol</i> packages all data whether application-level
+or as part of the handshake process into discrete records of data much
+like a TCP stream socket converts an application byte stream into
+network packets.  The individual records are then protected by the
+current encryption and integrity protection keys.
+
+<H2>Secret Key Cryptography</H2>
+<i>Secret key cryptography</i> uses an encryption algorithm in
+which the same key is used both to encrypt and decrypt the
+data. Secret key cryptography is also called symmetric cryptography.
+
+<H2>Session</H2>
+A <i>session</i> is a named collection of state information including
+authenticated peer identity, cipher suite, and key agreement
+secrets which are negotiated through a secure socket
+handshake and which can be shared among multiple secure
+socket instances.
+
+<H2>Truststore </H2>
+See <a href="#Stores">Keystores and Truststores</a>.
+</blockquote>
+
+<br>
+
+<a name="SSLOverview"></a>
+<H1>Secure Sockets Layer (SSL) Protocol Overview</H1>
+
+<blockquote>
+
+<P> Secure Sockets Layer (SSL) is the most widely used protocol
+for implementing cryptography on the Web. SSL uses a combination
+of cryptographic processes to provide secure communication
+over a network. This section provides an
+introduction to SSL and the cryptographic processes it uses.
+
+<P> SSL provides a secure enhancement to the standard TCP/IP
+sockets protocol used for Internet communications. As
+shown in the "TCP/IP Protocol Stack With SSL" figure below, the
+secure sockets layer is added between the transport layer and
+the application layer in the standard TCP/IP protocol stack.
+The application most commonly used with SSL is Hypertext
+Transfer Protocol (HTTP), the protocol for Internet Web
+pages. Other applications, such as Net News Transfer Protocol
+(NNTP), Telnet, Lightweight Directory Access Protocol
+(LDAP), Interactive Message Access Protocol (IMAP), and
+File Transfer Protocol (FTP), can be used with SSL as well.
+
+<P> Note: There is currently no standard for secure FTP.
+
+<br>
+<br>
+<P>
+
+<center>
+
+<TABLE>
+<CAPTION>
+<H3>TCP/IP Protocol Stack With SSL</H3>
+</CAPTION>
+<TR>
+<TH ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellHeading">
+TCP/IP Layer
+</TH>
+<TH ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellHeading">
+Protocol
+</TH>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>Application Layer
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>&nbsp;&nbsp;&nbsp;&nbsp;HTTP, NNTP, Telnet, FTP, etc.
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>Secure Sockets Layer
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>&nbsp;&nbsp;&nbsp;&nbsp;SSL
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>Transport Layer
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>&nbsp;&nbsp;&nbsp;&nbsp;TCP
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>Internet Layer
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>&nbsp;&nbsp;&nbsp;&nbsp;IP
+</TD>
+</TR>
+</TABLE>
+
+</center>
+
+
+<P> SSL was developed by Netscape in 1994, and with input
+from the Internet community, has evolved to become a standard.
+It is now under the control of the international standards
+organization, the Internet Engineering Task Force
+(IETF). The IETF has renamed SSL to Transport Layer
+Security (TLS), and released the first specification, version
+1.0, in January 1999. TLS 1.0 is a modest upgrade to the
+most recent version of SSL, version 3.0. The differences
+between SSL 3.0 and TLS 1.0 are minor.
+
+
+<a name="WhySSL"></a>
+<H2>Why Use SSL?</H2>
+
+<blockquote>
+
+Transferring sensitive information over a network can be
+risky due to the following three issues:
+
+<ul>
+
+<li>You cannot always be sure that the entity with whom you
+are communicating is really who you think it is.<P>
+
+<li>Network data can be intercepted, so it is possible that it
+can be read by an unauthorized third party, sometimes
+known as an attacker. <P>
+
+<li>If an attacker can intercept the data, the attacker may be
+able to modify the data before sending it on the receiver.
+
+</ul>
+
+<P> SSL addresses each of these issues. It addresses the first issue by
+optionally allowing each of two communicating parties to ensure the
+identity of the other party in a process called authentication. Once
+the parties are authenticated, SSL provides an encrypted connection
+between the two parties for secure message transmission. Encrypting the
+communication between the two parties provides privacy and therefore
+addresses the second issue. The encryption algorithms used with SSL
+include a secure hash function, which is similar to a checksum. This
+ensures that data is not modified in transit. The secure hash function
+addresses the third issue of data integrity.
+
+<P> Note, both authentication and encryption are optional, and depend
+on the the negotiated cipher suites between the two entities.
+
+<P> The most obvious example of when you would use SSL is in
+an e-commerce transaction. In an e-commerce transaction, it
+would be foolish to assume that you can guarantee the identity
+of the server with whom you are communicating. It
+would be easy enough for someone to create a phony Web
+site promising great services if only you enter your credit
+card number. SSL allows you, the client, to authenticate the
+identity of the server. It also allows the server to authenticate
+the identity of the client, although in Internet transactions,
+this is seldom done.
+
+<P> Once the client and the server are comfortable with each
+other's identity, SSL provides privacy and data integrity
+through the encryption algorithms it uses. This allows sensitive
+information, such as credit card numbers, to be transmitted
+securely over the Internet.
+
+<P> While SSL provides authentication, privacy, and data integrity,
+it does not provide non-repudiation services. Non-repudiation
+means that an entity that sends a message cannot later
+deny that they sent it. When the digital equivalent of a signature
+is associated with a message, the communication can
+later be proved. SSL alone does not provide non-repudiation.
+
+</blockquote>
+
+
+<a name="HowSSLWorks"></a>
+<H2>How SSL Works</H2>
+
+<blockquote>
+
+One of the reasons SSL is effective is that it uses several different
+cryptographic processes. SSL uses public key cryptography to provide
+authentication, and secret key cryptography and digital signatures to
+provide for privacy and data integrity. Before you can understand SSL,
+it is helpful to understand these cryptographic processes.
+
+<H3>Cryptographic Processes</H3>
+
+<blockquote>
+
+The primary purpose of cryptography is to make it difficult
+for an unauthorized third party to access and understand private
+communication between two parties. It is not always
+possible to restrict all unauthorized access to data, but private
+data can be made unintelligible to unauthorized parties
+through the process of encryption. Encryption uses complex
+algorithms to convert the original message, or cleartext, to an
+encoded message, called ciphertext. The algorithms used to
+encrypt and decrypt data that is transferred over a network
+typically come in two categories: secret key cryptography
+and public key cryptography. These forms of cryptography
+are explained in the following subsections.
+
+<P> Both secret key cryptography and public key cryptography
+depend on the use of an agreed-upon cryptographic key or
+pair of keys. A key is a string of bits that is used by the cryptographic
+algorithm or algorithms during the process of
+encrypting and decrypting the data. A cryptographic key is
+like a key for a lock: only with the right key can you open the
+lock.
+
+<P> Safely transmitting a key between two communicating parties
+is not a trivial matter. A public key certificate allows a
+party to safely transmit its public key, while ensuring the
+receiver of the authenticity of the public key. Public key certificates
+are described in a later section.
+
+<P> In the descriptions of the cryptographic processes that follow,
+we use the conventions used by the security community:
+we label the two communicating parties with the names
+Alice and Bob. We call the unauthorized third party, also
+known as the attacker, Charlie.
+
+
+<H4>Secret Key Cryptography</H4>
+
+<blockquote>
+
+<P> With secret key cryptography, both communicating parties,
+Alice and Bob, use the same key to encrypt and decrypt the
+messages. Before any encrypted data can be sent over the
+network, both Alice and Bob must have the key and must
+agree on the cryptographic algorithm that they will use for
+encryption and decryption.
+
+<P> One of the major problems with secret key cryptography is
+the logistical issue of how to get the key from one party to
+the other without allowing access to an attacker. If Alice and
+Bob are securing their data with secret key cryptography, and
+if Charlie gains access to their key, Charlie can understand
+any secret messages he intercepts between Alice and Bob.
+Not only can Charlie decrypt Alice's and Bob's messages,
+but he can also pretend that he is Alice and send encrypted
+data to Bob. Bob will not know that the message came from
+Charlie, not Alice.
+
+<P> Once the problem of secret key distribution is solved, secret key
+cryptography can be a valuable tool. The algorithms provide excellent
+security and encrypt data relatively quickly.  The majority of the
+sensitive data sent in an SSL session is sent using secret key
+cryptography.
+
+<P> Secret key cryptography is also called <i>symmetric cryptography</i>
+because the same key is used to both encrypt and
+decrypt the data. Well-known secret key cryptographic algorithms
+include the Data Encryption Standard (DES), triple-strength
+DES (3DES), Rivest Cipher 2 (RC2), and Rivest
+Cipher 4 (RC4).
+
+</blockquote>
+
+
+<H4>Public Key Cryptography</H4>
+
+<blockquote>
+
+<P> Public key cryptography solves the logistical problem of key
+distribution by using both a public key and a private key. The
+public key can be sent openly through the network while the
+private key is kept private by one of the communicating parties.
+The public and the private keys are cryptographic
+inverses of each other; what one key encrypts, the other key
+will decrypt.
+
+<P> Let's assume that Bob wants to send a secret message to
+Alice using public key cryptography. Alice has both a public
+key and a private key, so she keeps her private key in a safe
+place and sends her public key to Bob. Bob encrypts the
+secret message to Alice using Alice's public key. Alice can
+later decrypt the message with her private key.
+
+<P> If Alice encrypts a message using her private key and sends
+the encrypted message to Bob, Bob can be sure that the data
+he receives comes from Alice; if Bob can decrypt the data
+with Alice's public key, the message must have been
+encrypted by Alice with her private key, and only Alice has
+Alice's private key. The problem is that anybody else can
+read the message as well because Alice's public key is public.
+While this scenario does not allow for secure data communication,
+it does provide the basis for digital signatures. A
+digital signature is one of the components of a public key
+certificate, and is used in SSL to authenticate a client or a
+server. Public key certificates and digital signatures are
+described in later sections.
+
+<P> Public key cryptography is also called <i>asymmetric
+cryptography</i> because different keys are used to encrypt and decrypt
+the data. A well known public key cryptographic algorithm often used
+with SSL is the Rivest Shamir Adleman (RSA) algorithm. Another public
+key algorithm used with SSL that is designed specifically for secret
+key exchange is the Diffie-Hellman (DH) algorithm. Public key
+cryptography requires extensive computations, making it very slow. It
+is therefore typically used only for encrypting small pieces of data,
+such as secret keys, rather than for the bulk of encrypted data
+communications.
+
+</blockquote>
+
+
+<H4>A
+Comparison Between Secret Key and Public Key Cryptography</H4>
+
+<blockquote>
+
+<P> Both secret key cryptography and public key cryptography
+have strengths and weaknesses. With secret key cryptography,
+data can be encrypted and decrypted quickly, but since
+both communicating parties mush share the same secret key
+information, the logistics of exchanging the key can be a
+problem. With public key cryptography, key exchange is not
+a problem since the public key does not need to be kept
+secret, but the algorithms used to encrypt and decrypt data
+require extensive computations, and are therefore very slow.
+
+</blockquote>
+
+
+<H4>Public Key Certificates</H4>
+
+<blockquote>
+
+<P> A public key certificate provides a safe way for an entity to
+pass on its public key to be used in asymmetric cryptography.
+The public key certificate avoids the following situation:
+if Charlie creates his own public key and private key, he can
+claim that he is Alice and send his public key to Bob. Bob
+will be able to communicate with Charlie, but Bob will think
+that he is sending his data to Alice.
+
+<P> A public key certificate can be thought of as the digital
+equivalent of a passport. It is issued by a trusted organization
+and provides identification for the bearer. A trusted organization
+that issues public key certificates is known as a certificate
+authority (CA). The CA can be likened to a notary
+public. To obtain a certificate from a CA, one must provide
+proof of identity. Once the CA is confident that the applicant
+represents the organization it says it represents, the CA
+signs the certificate attesting to the validity of the information
+contained within the certificate.
+
+<P> A public key certificate contains several fields, including:
+
+<ul>
+
+<li>Issuer - The issuer is the CA that issued the certificate. If
+a user trusts the CA that issues a certificate, and if the
+certificate is valid, the user can trust the certificate.<P>
+
+<li>Period of validity - A certificate has an expiration date,
+and this date is one piece of information that should be
+checked when verifying the validity of a certificate.<P>
+
+<li>Subject - The subject field includes information about
+the entity that the certificate represents.<P>
+
+<li>Subject's public key - The primary piece of information
+that the certificate provides is the subject's public key. All
+the other fields are provided to ensure the validity of this
+key.<P>
+
+<li>Signature - The certificate is digitally signed by the CA
+that issued the certificate. The signature is created using
+the CA's private key and ensures the validity of the certificate.
+Because only the certificate is signed, not the data
+sent in the SSL transaction, SSL does not provide for
+non-repudiation.
+
+</ul>
+
+<P> If Bob only accepts Alice's public key as valid when she
+sends it in a public key certificate, Bob will not be fooled
+into sending secret information to Charlie when Charlie masquerades
+as Alice.
+
+<P> Multiple certificates may be linked in a certificate chain.
+When a certificate chain
+is used, the first certificate is always that of the sender. The
+next is the certificate of the entity that issued the sender's
+certificate. If there are more certificates in the chain, each is
+that of the authority that issued the previous certificate. The
+final certificate in the chain is the certificate for a root CA. A
+root CA is a public certificate authority that is widely trusted.
+Information for several root CAs is typically stored in the client's
+Internet browser. This information includes the CA's
+public key. Well-known CAs include VeriSign, Entrust, and
+GTE CyberTrust.
+
+</blockquote>
+
+
+<H4>Cryptographic Hash Functions</H4>
+
+<blockquote>
+
+<P> When sending encrypted data, SSL typically uses a cryptographic
+hash function to ensure data integrity. The hash function
+prevents Charlie from tampering with data that Alice
+sends to Bob.
+
+<P> A cryptographic hash function is similar to a checksum. The
+main difference is that while a checksum is designed to
+detect accidental alterations in data, a cryptographic hash
+function is designed to detect deliberate alterations. When
+data is processed by a cryptographic hash function, a small
+string of bits, known as a hash, is generated. The slightest
+change to the message typically makes a large change in the
+resulting hash. A cryptographic hash function does not
+require a cryptographic key. Two hash functions often used
+with SSL are Message Digest 5 (MD5) and Secure Hash
+Algorithm (SHA). SHA was proposed by the
+<A HREF="http://www.nist.gov">US National
+Institute of Science and Technology (NIST)</A>.
+
+</blockquote>
+
+<H4>Message Authentication Code</H4>
+
+<blockquote>
+
+A message authentication code (MAC) is similar to a cryptographic
+hash, except that it is based on a secret key. When
+secret key information is included with the data that is processed
+by a cryptographic hash function, the resulting hash is
+known as an HMAC.
+
+<P> If Alice wants to be sure that Charlie does not tamper with
+her message to Bob, she can calculate an HMAC for her
+message and append the HMAC to her original message. She
+can then encrypt the message plus the HMAC using a secret
+key she shares with Bob. When Bob decrypts the message
+and calculates the HMAC, he will be able to tell if the message
+was modified in transit. With SSL, an HMAC is used
+with the transmission of secure data.
+
+</blockquote>
+
+
+<H4>Digital Signatures</H4>
+
+<blockquote>
+
+<P> Once a cryptographic hash is created for a message, the hash
+is encrypted with the sender's private key. This encrypted
+hash is called a digital signature.
+
+</blockquote>
+
+</blockquote>
+
+
+<H3>The SSL Process</H3>
+
+<blockquote>
+
+<P> Communication using SSL begins with an exchange of
+information between the client and the server. This exchange
+of information is called the SSL handshake.
+
+<P> The three main purposes of the SSL handshake are:
+
+<ul>
+
+<li>Negotiate the cipher suite<P>
+
+<li>Authenticate identity (optional)<P>
+
+<li>Establish information security by agreeing on encryption
+mechanisms
+
+</ul>
+
+
+<H4>Negotiating the Cipher Suite</H4>
+
+<blockquote>
+
+<P> The SSL session begins with a negotiation between the client
+and the server as to which cipher suite they will use. A cipher
+suite is a set of cryptographic algorithms and key sizes that a
+computer can use to encrypt data. The cipher suite includes
+information about available public key exchange algorithms,
+secret key encryption algorithms, and cryptographic hash
+functions. The client tells the server which cipher suites it
+has available, and the server chooses the best mutually
+acceptable cipher suite.
+
+</blockquote>
+
+
+<H4>Authenticating the Server</H4>
+
+<blockquote>
+
+<P> In SSL, the authentication step is optional, but in the example
+of an e-commerce transaction over the Web, the client
+will generally want to authenticate the server. Authenticating
+the server allows the client to be sure that the server represents
+the entity that the client believes the server represents.
+
+<P> To prove that a server belongs to the organization that it
+claims to represent, the server presents its public key certificate
+to the client. If this certificate is valid, the client can be
+sure of the identity of the server.
+
+<P> The client and server exchange information that allows them
+to agree on the same secret key. For example, with RSA, the
+client uses the server's public key, obtained from the public
+key certificate, to encrypt the secret key information. The client
+sends the encrypted secret key information to the server.
+Only the server can decrypt this message since the server's
+private key is required for this decryption.
+
+</blockquote>
+
+
+<H4>Sending the Encrypted Data</H4>
+
+<blockquote>
+
+<P> Both the client and the server now have access to the same
+secret key. With each message, they use the cryptographic
+hash function, chosen in the first step of this process, and
+shared secret information, to compute an HMAC that they
+append to the message. They then use the secret key and the
+secret key algorithm negotiated in the first step of this process
+to encrypt the secure data and the HMAC. The client
+and server can now communicate securely using their
+encrypted and hashed data.
+
+</blockquote>
+
+</blockquote>
+
+
+<H3>The SSL Protocol</H3>
+
+<blockquote>
+
+<P> The previous section provides a high-level description of the
+SSL handshake, which is the exchange of information
+between the client and the server prior to sending the
+encrypted message. This section provides more detail.
+
+<P> The "SSL Messages" figure below shows the sequence of messages
+that are exchanged in the SSL handshake. Messages that are
+only sent in certain situations are noted as optional. Each of
+the SSL messages is described in the following figure:
+
+<P>
+
+<TABLE>
+<CAPTION>
+<H3>
+SSL Messages</H3>
+</CAPTION>
+
+<TR>
+<TH ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellHeading">
+Client
+</TH>
+<TH ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellHeading">
+&nbsp;
+</TH>
+<TH ROWSPAN="1" COLSPAN="1">
+<P CLASS="CellHeading">
+Server
+</TH>
+</TR>
+
+
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P> 1. Client hello
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>-----&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>&lt;-----
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P> 2. Server hello
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>&lt;-----&nbsp;&nbsp;
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P> 3. Certificate (Optional)
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>&lt;-----
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P> 4. Certificate request (Optional)
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>&lt;-----
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P> 5. Server key exchange (Optional)
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>&lt;-----
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P> 6. Server hello done
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P> 7. Certificate (Optional)
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>-----&gt;
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P> 8. Client key exchange
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>-----&gt;
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P> 9. Certificate verify (Optional)
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>-----&gt;
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P> 10. Change cipher spec
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>-----&gt;
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P> 11. Finished
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>-----&gt;
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>&lt;-----
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P> 12. Change cipher spec
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>&lt;-----
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P> 13. Finished
+</TD>
+</TR>
+<TR>
+<TD ROWSPAN="1" COLSPAN="1">
+<P> 14. Encrypted data
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P>&lt;-----
+</TD>
+<TD ROWSPAN="1" COLSPAN="1">
+<P> 14. Encrypted data
+</TD>
+</TR>
+</TABLE>
+
+<P> The SSL messages are sent in the following order:
+
+<ol>
+
+<li><b>Client hello</b> - The client sends the server information
+including the highest version of SSL it supports and a list
+of the cipher suites it supports. (TLS 1.0 is indicated as
+SSL 3.1.) The cipher suite information includes cryptographic
+algorithms and key sizes.<P>
+
+<li><b>Server hello</b> - The server chooses the highest version of
+SSL and the best cipher suite that both the client and
+server support and sends this information to the client.<P>
+
+<li><b>Certificate</b> - The server sends the client a certificate or a
+certificate chain. A certificate chain typically begins with the
+server's public key certificate and ends with the certificate
+authority's root certificate. This message is optional, but is used
+whenever server authentication is required.<P>
+
+<li><b>Certificate request</b> - If the server needs to authenticate
+the client, it sends the client a certificate request. In Internet
+applications, this message is rarely sent.<P>
+
+<li><b>Server key exchange</b> - The server sends the client a server
+key exchange message when the public key information sent in 3) above
+is not sufficient for key exchange.<P>
+
+<li><b>Server hello done</b> - The server tells the client that it is
+finished with its initial negotiation messages.<P>
+
+<li><b>Certificate</b> - If the server requests a certificate from the
+client in Message 4, the client sends its certificate chain,
+just as the server did in Message 3.<P>
+
+<P> Note: At the time of this writing (April 2002), only a few
+Internet server applications ask for a certificate from the
+client. When a certificate is required from the client, the
+user must obtain their own certificate from a certificate
+authority.<P>
+
+<li><b>Client key exchange</b> - The client generates information
+used to create a key to use for symmetric encryption. For
+RSA, the client then encrypts this key information with
+the server's public key and sends it to the server.<P>
+
+<li><b>Certificate verify</b> - In internet applications, this message
+is rarely sent. Its purpose is to allow the server to complete the
+process of authenticating the client. When this message is used, the
+client sends information that it digitally signs using a cryptographic
+hash function. When the server decrypts this information with the
+client's public key, the server is able to authenticate the client.<P>
+
+<li><b>Change cipher spec</b> - The client sends a message telling the
+server to change to encrypted mode. <P>
+
+<li><b>Finished</b> - The client tells the server that it is ready for
+secure data communication to begin.<P>
+
+<li><b>Change cipher spec</b> - The server sends a message telling
+the client to change to encrypted mode.<P>
+
+<li><b>Finished</b> - The server tells the client that it is ready for
+secure data communication to begin. This is the end of
+the SSL handshake.<P>
+
+<li><b>Encrypted data</b> - The client and the server communicate
+using the symmetric encryption algorithm and the cryptographic
+hash function negotiated in Messages 1 and 2,
+and using the secret key that the client sent to the server
+in Message 8.
+
+</ol>
+
+<P> If the parameters generated during an SSL session are saved,
+these parameters can sometimes be re-used for future SSL
+sessions. Saving SSL session parameters allows encrypted
+communication to begin much more quickly.
+
+</blockquote>
+</blockquote>
+
+
+<a name="SSLRefs"></a>
+<H2>SSL and TLS References</H2>
+
+<blockquote>
+
+<P> For a list of resources containing more information about SSL, see
+<a href="#SSLDocs">Secure Sockets Layer Documentation</a> .
+
+</blockquote>
+
+
+</blockquote>
+
+<br>
+
+
+
+<a name="KeyClasses"></a>
+<H1>Key Classes</H1>
+
+<blockquote>
+
+
+<a name="CoreClasses"></a>
+<H2>Core Classes and Interfaces</H2>
+
+<blockquote>
+
+<P> The core JSSE classes are part of the <code>javax.net</code> and
+<code>javax.net.ssl</code> packages.
+
+
+<a name="SSLSocket"></a>
+<H3><code>SSLSocket</code> and <code>SSLServerSocket</code> Classes</H3>
+
+<blockquote>
+
+<P> The <code>javax.net.ssl.SSLSocket</code> class is a subclass of the
+standard Java <code>java.net.Socket</code> class. It supports all of
+the standard socket methods and adds additional methods specific to
+secure sockets. Instances of this class encapsulate the <a href=
+"#SSLContext"><code>SSLContext</code></a> under which they were
+created. There are APIs to control the creation of secure socket
+sessions for a socket instance but trust and key management are not
+directly exposed.
+
+<P> The <code>javax.net.ssl.SSLServerSocket</code> class is analogous
+to the <code>SSLSocket</code> class, but is used specifically for
+creating server sockets.
+
+
+<H4>Obtaining an <code>SSLSocket</code></H4>
+
+<blockquote>
+Instances of <code>SSLSocket</code> can be obtained in two ways. First,
+an <code>SSLSocket</code> can be created by an instance of <a href=
+"#SSLSocketFactory"><code>SSLSocketFactory</code></a> via one of the
+several <code>createSocket</code> methods on that class.  The second
+way to obtain <code>SSLSocket</code>s is through the
+<code>accept</code> method on the <code>SSLServerSocket</code> class.
+</blockquote>
+
+</blockquote>
+
+
+<a name="SocketFactory"></a>
+<H3><code>SocketFactory</code> and
+<code>ServerSocketFactory</code> Classes</H3>
+
+<blockquote>
+
+<P> The abstract <code>javax.net.SocketFactory</code> class is used to
+create sockets. It must be subclassed by other factories, which create
+particular subclasses of sockets and thus provide a general framework
+for the addition of public socket-level functionality.  (See, for
+example, <a
+href="#SSLSocketFactory"><code>SSLSocketFactory</code></a>.)
+
+<P> The <code>javax.net.ServerSocketFactory</code> class is analogous to the
+<code>SocketFactory</code> class, but is used specifically for creating
+server sockets.
+
+<P> Socket factories are a simple way to capture a variety of policies
+related to the sockets being constructed, producing such sockets in
+a way which does not require special configuration of the code which
+asks for the sockets:
+
+<UL>
+
+<LI> Due to polymorphism of both factories and sockets, different
+kinds of sockets can be used by the same application code just
+by passing different kinds of factories.<P>
+
+<LI> Factories can themselves be customized with parameters used
+in socket construction. So for example, factories could be
+customized to return sockets with different networking timeouts
+or security parameters already configured.<P>
+
+<LI> The sockets returned to the application can be subclasses
+of <code>java.net.Socket</code> (or <code>javax.net.ssl.SSLSocket</code>),
+so that they can directly expose new APIs
+for features such as compression, security, record marking,
+statistics collection, or firewall tunneling.
+
+</UL>
+
+</blockquote>
+
+
+<a name="SSLSocketFactory"></a>
+<H3><code>SSLSocketFactory</code> and
+<code>SSLServerSocketFactory</code> Classes</H3>
+
+<blockquote>
+
+<P> A <code>javax.net.ssl.SSLSocketFactory</code> acts as a factory for
+creating secure sockets. This class is a concrete implementation of the
+abstract <a href= "#SocketFactory"><code>SocketFactory</code></a>
+class provided with JSSE in the <code>javax.net</code> package.
+
+<P> Secure socket factories encapsulate the details of creating
+and initially configuring secure sockets. This includes authentication
+keys, peer certificate validation, enabled cipher suites
+and the like.
+
+<P> The <code>javax.net.ssl.SSLServerSocketFactory</code> class is
+analogous to the <code>SSLSocketFactory</code> class, but is used
+specifically for creating server sockets.
+
+<H4>Obtaining an <code>SSLSocketFactory</code></H4>
+
+<blockquote>
+
+<P> There are three primary ways of obtaining an
+<code>SSLSocketFactory</code>:
+
+<ul>
+
+<li>
+Get the default factory by calling the
+<code>SSLSocketFactory.getDefault</code> static method.<P> </li>
+
+<li>
+
+Receive a factory as an API parameter. That is, code which needs to
+create sockets but which doesn't care about the details of how the
+sockets are configured can include a method with an
+<code>SSLSocketFactory</code> parameter that can be called by clients
+to specify which <code>SSLSocketFactory</code> to use when creating
+sockets.  (For example, com.sun.net.ssl.HttpsURLConnection.)<P> </li>
+
+<li>
+Construct a new factory with specifically configured behavior.</li>
+
+</ul>
+
+<P> The default factory is typically configured to support server
+authentication only so that sockets created by the default factory do
+not leak any more information about the client than a normal TCP socket
+would.
+
+<p>Many classes which create and use sockets do not need to know the
+details of socket creation behavior. Creating sockets through a socket
+factory passed in as a parameter is a good way of isolating the details
+of socket configuration, and increases the reusability of classes which
+create and use sockets.
+
+<p>You can create new socket factory instances either by implementing
+your own socket factory subclass or by using another class which acts
+as a factory for socket factories. One example of such a class is
+<code>SSLContext</code>, which is provided with the JSSE 1.0.3
+reference implementation as a non-standard provider-based configuration
+class.
+
+</blockquote>
+</blockquote>
+
+
+<a name="SSLSession"></a>
+<H3><code>SSLSession</code> Interface</H3>
+
+<blockquote>
+
+<P> A <code>javax.net.ssl.SSLSession</code> represents a security context
+negotiated between the two peers of an
+<a href="#SSLSocket"><code>SSLSocket</code></a> connection. Once a
+session has been arranged, it can be shared by future
+<code>SSLSocket</code>s connected between the same two peers. The
+session contains the cipher suite which will be used for communications
+over a secure socket as well as a non-authoritative
+hint as to the network address of the remote peer, and
+management information such as the time of creation and last
+use. A session also contains a shared master secret negotiated
+between the peers that is used to create cryptographic
+keys for encrypting and guaranteeing the integrity of the
+communications over an <code>SSLSocket</code>. The value of this master
+secret is known only to the underlying secure socket
+implementation and is not exposed through the <code>SSLSession</code>
+API.
+
+</blockquote>
+
+</blockquote>
+
+
+
+<a name="SupportClasses"></a>
+<H2>Support Classes and Interfaces</H2>
+
+<blockquote>
+
+<P> These classes are provided as part of the JSSE 1.0.3 API to support
+the creation, use, and management of secure sockets.
+They are less likely to be used by secure socket applications
+than are the core classes. The support classes and interfaces
+are part of the <code>javax.net.ssl</code> and
+<code>javax.security.cert</code> packages.
+
+
+<a name="SSLSessionContext"></a>
+<H3><code>SSLSessionContext</code> Interface</H3>
+
+<blockquote>
+
+<P> A <code>javax.net.ssl.SSLSessionContext</code> is a grouping of
+<a href="#SSLSession"><code>SSLSession</code></a>s
+associated with a single entity. For example, it could be associated
+with a server or client that participates in many sessions
+concurrently. The methods on this interface enable the
+enumeration of all sessions in a context and allow lookup of specific sessions
+via their session ids.
+
+<P> An <code>SSLSessionContext</code> may optionally be obtained from an
+<code>SSLSession</code> by calling the SSLSession
+<code>getSessionContext</code> method.  The context may be unavailable
+in some environments, in which case the <code>getSessionContext</code>
+method returns null.
+
+</blockquote>
+
+
+<a name="SSLSessionBindingListener"></a>
+<H3><code>SSLSessionBindingListener</code> Interface</H3>
+
+<blockquote>
+
+<P> <code>javax.net.ssl.SSLSessionBindingListener</code> is an
+interface implemented by objects which want to be notified
+when they are being bound or unbound from an
+<a href="#SSLSession"><code>SSLSession</code></a>.
+
+</blockquote>
+
+
+<a name="SSLSessionBindingEvent"></a>
+<H3><code>SSLSessionBindingEvent</code> Class</H3>
+
+<blockquote>
+
+<P> A <code>javax.net.ssl.SSLSessionBindingEvent</code> is the
+event communicated to a
+<a href="#SSLSessionBindingListener">
+<code>SSLSessionBindingListener</code></a>
+when it is bound or unbound from an
+<a href="#SSLSession"><code>SSLSession</code></a>.
+
+</blockquote>
+
+
+<a name="HandShakeCompletedListener"></a>
+<H3><code>HandShakeCompletedListener</code> Interface</H3>
+
+<blockquote>
+<P> <code>javax.net.ssl.HandShakeCompletedListener</code> is an
+interface implemented by any class which wants to receive
+notification of the completion of an SSL protocol handshake
+on a given <code>SSLSocket</code> connection.
+
+</blockquote>
+
+
+<a name="HandShakeCompletedEvent"></a>
+<H3><code>HandShakeCompletedEvent</code> Class</H3>
+
+<blockquote>
+<P> A <code>javax.net.ssl.HandShakeCompletedEvent</code> is the
+event communicated to a
+<a href="#HandShakeCompletedListener">
+<code>HandShakeCompletedListener</code></a>
+upon completion of an SSL protocol handshake
+on a given <code>SSLSocket</code> connection.
+
+</blockquote>
+
+
+<a name="X509Certificate"></a>
+<H3>X509Certificate Class</H3>
+
+<blockquote>
+
+<P> Many secure socket protocols perform authentication using
+public key certificates, also called X.509 certificates.
+This is the default authentication mechanism for the
+SSL and TLS protocols.
+
+<P> The <code>javax.security.cert.X509Certificate </code> abstract
+class provides a standard way to access the attributes
+of X.509 certificates.
+
+<P> This <code>javax.security.cert.X509Certificate</code> class
+is similar to <code>java.security.cert.X509Certificate</code>,
+and is currently implemented as a wrapper
+around <code>java.security.cert.X509Certificate</code>.
+
+</blockquote>
+</blockquote>
+
+
+
+<a name="ConfigurationClasses"></a>
+<H2>Reference Implementation Classes and Interfaces</H2>
+
+<blockquote>
+
+<P> These classes and interfaces are provided with the JSSE reference
+implementation, in the <code>com.sun.net.ssl</code> package.
+They are not part of the JSSE 1.0.3
+standard API, and thus may not be available in other implementations.
+
+<P> Three of the classes described in this section (<a href=
+"#SSLContext"><code>SSLContext</code></a>, <a href=
+"#KeyManagerFactory"><code>KeyManagerFactory</code></a>, and <a href=
+"#TrustManagerFactory"><code>TrustManagerFactory</code></a>) are
+<i>engine classes</i>. An engine class is an API class for specific
+algorithms (or protocols, in the case of <code>SSLContext</code>), for
+which implementations may be provided in one or more
+Cryptographic Service Provider (provider) packages.  For more
+information on providers and engine classes, see the "Design
+Principles" and "Concepts" sections of the <a
+href="http://java.sun.com/j2se/1.3/docs/guide/security/CryptoSpec.html">
+Java<SUP><FONT SIZE="-2">TM</FONT></SUP> Cryptography Architecture API
+Specification & Reference</a>.
+
+<P> The <code>SunJSSE</code> provider that comes standard with JSSE
+1.0.3 provides <code>SSLContext</code>, <code>KeyManagerFactory</code>,
+and <code>TrustManagerFactory</code> implementations, as well as
+implementations for engine classes in the standard Java security
+(<code>java.security</code>) API.  The implementations supplied by
+<code>SunJSSE</code> are:
+
+<blockquote>
+<pre>
+<b>Engine Class        Algorithm or </b>
+<b>Implemented           Protocol</b>
+
+KeyFactory            RSA
+
+KeyPairGenerator      RSA
+
+KeyStore              PKCS12
+
+Signature             MD2withRSA
+Signature             MD5withRSA
+Signature             SHA1withRSA
+
+KeyManagerFactory     SunX509
+TrustManagerFactory   SunX509
+
+SSLContext            SSL
+SSLContext            SSLv3
+SSLContext            TLS
+SSLContext            TLSv1
+</pre>
+</blockquote>
+
+
+<a name="SSLContext"></a>
+<H3><code>SSLContext</code> Class</H3>
+
+<blockquote>
+
+<P> <code>com.sun.net.ssl.SSLContext</code> is an engine class
+for an implementation of a
+secure socket protocol. An instance of this class acts as a factory
+for SSL socket factories. An <code>SSLContext</code> holds all of the state
+information shared across all sockets created under that context.
+For example, session state is associated with the <code>SSLContext</code>
+when it is negotiated through the handshake
+protocol by sockets created by socket factories provided by
+the context. These cached sessions can be reused and shared
+by other sockets created under the same context.
+
+<p>Each instance is configured through its <code>init</code> method with the
+keys, certificate chains, and trusted root CA certificates that it needs to
+perform authentication. This configuration is provided in the form of key
+and trust managers. These managers provide support for the authentication
+and key agreement aspects of the cipher suites supported by the context.
+
+<p>Currently, only X.509-based managers are supported.
+
+
+<H4>Creating an <code>SSLContext</code> Object</H4>
+
+<blockquote>
+
+Like other JCA provider-based "engine" classes, <code>SSLContext</code>
+objects are created using the <code>getInstance</code> factory methods of
+the <code>SSLContext</code> class. These static methods each return an
+instance that implements a requested secure socket protocol.
+
+<P> Note: An <code>SSLContext</code> object is automatically created
+and initialized when you call
+<code>SSLSocketFactory.getDefault</code>, if one hasn't already been
+assigned to that <code>SSLSocketFactory</code>.  Thus, you don't have
+to directly create and initialize an <code>SSLContext</code> object,
+but you can if you want to override the default behavior.
+
+<p>To create an <code>SSLContext</code> object by calling a
+<code>getInstance</code> factory method, you must specify the protocol
+name.  You may also specify which provider you want to supply the
+implementation of the requested protocol:
+
+<blockquote>
+<pre>
+public static SSLContext getInstance(String protocol);
+
+public static SSLContext getInstance(String protocol,
+                                     String provider);
+
+public static SSLContext getInstance(String protocol,
+                                     Provider provider);
+</pre>
+</blockquote>
+
+<P> If just a protocol name is specified, the system will determine if there
+is an implementation of the requested protocol available in the environment,
+and if there is more than one, if there is a preferred one.
+<p>If both a protocol name and a provider are specified, the system will
+determine if there is an implementation of the requested protocol in the
+provider requested, and throw an exception if there is not.
+
+<p>A protocol is a string (such as "SSL") that describes the
+secure socket protocol desired.
+Common protocol names for <code>SSLContext</code> objects are defined in
+<a href="#AppA">Appendix A</a>.
+
+<P> Here is an example of obtaining an <code>SSLContext</code>:
+
+<blockquote>
+<pre>
+SSLContext sc = SSLContext.getInstance("SSL");
+</pre>
+</blockquote>
+
+
+<p>A newly-created <code>SSLContext</code> should be initialized by calling the
+<code>init</code> method:
+
+<blockquote>
+<pre>
+public void init(KeyManager[] km, TrustManager[] tm,
+                   SecureRandom random);
+</pre>
+</blockquote>
+
+<P>  If the <code>KeyManager[]</code> paramater is null, then an empty
+<code>KeyManager</code> will be defined for this context.  If the
+<code>TrustManager[]</code> parameter is null, the installed security
+providers will be searched for the highest-priority implementation of the
+<a href="#TrustManagerFactory"><code>TrustManagerFactory</code></a>), from
+which an appropriate <code>TrustManager</code> will be obtained.
+Likewise, the secure random parameter may be null, in which case a
+default implementation will be used.
+
+<P> If the internal default context is used, (e.g. a
+<code>SSLContext</code> is created in the internals of JSSE 1.0.3), <a
+href="#CustomizingStores"> a default <code>KeyManager</code> and a
+<code>TrustManager</code></a> are created.  The default
+<code>SecureRandom</code> implementation is also chosen.
+
+</blockquote>
+</blockquote>
+
+<a name="TrustManagerFactory"></a>
+<H3><code>TrustManagerFactory</code> Class</H3>
+
+<blockquote>
+
+To be able to authenticate the remote identity of a secure
+socket peer, you need to initialize an <code>SSLContext</code> object
+with one or more <code>TrustManager</code>s. You need to pass one
+<code>TrustManager</code> for each authentication mechanism that is
+supported. If null is passed into the <code>SSLContext</code> initialization,
+a trust manager will be created for you. Typically, there
+is a single trust manager that supports authentication based
+on X.509 public key certificates. Some secure socket implementations
+may also support authentication based on shared
+secret keys, Kerberos, or other mechanisms.
+
+<p>The <code>com.sun.net.ssl.TrustManagerFactory</code> is an engine
+class for a provider-based service that acts as a factory for one or
+more types of <code>TrustManager</code> objects. The
+<code>SunJSSE</code> provider implements a factory which can return a
+basic X.509 trust manager.  Because it is provider-based, additional
+factories can be implemented and configured that provide additional or
+alternate trust managers that provide more sophisticated services or
+that implement installation-specific authentication policies.
+
+<H4>Creating a <code>TrustManagerFactory</code></H4>
+
+<blockquote>
+You create an instance of this class in a similar manner to
+<code>SSLContext</code>, except for passing an algorithm name string
+instead of a protocol name to the <code>getInstance</code> method:
+
+<blockquote>
+<pre>
+public static TrustManagerFactory
+                  getInstance(String algorithm);
+
+public static TrustManagerFactory
+                  getInstance(String algorithm,
+                              String provider);
+
+public static TrustManagerFactory
+                  getInstance(String algorithm,
+                              Provider provider);
+</pre>
+</blockquote>
+
+<P> A sample algorithm name string is:
+
+<blockquote><i><font face="Courier New,Courier">"SunX509"</font></i>
+</blockquote>
+
+<P> A sample call is the following:
+
+<blockquote>
+<pre>
+TrustManagerFactory tmf =
+    TrustManagerFactory.getInstance("SunX509", "SunJSSE");
+</pre>
+</blockquote>
+
+<P> The above call will create an instance of the <code>SunJSSE</code> provider's
+default trust manager factory, which
+provides basic X.509-based certification path validity checking. In the
+1.0.3 release, this performs a subset of the rules specified in RFC 2459.
+
+<p>A newly-created factory should be initialized by calling the
+<code>init</code> method:
+
+<blockquote>
+<pre>
+public void init(KeyStore ks);
+</pre>
+</blockquote>
+
+You may pass a KeyStore object, which the factory will query for
+information on which remote certificates should be trusted during
+authorization checks.
+
+<p>Some factories are capable of making trust decisions without having
+to be initialized with a KeyStore object. For example, they may access
+trust material from a local directory service via LDAP, may use a
+remote online certificate status checking server, or may access default
+trust material from a standard local location.  For instance, if no
+KeyStore parameter is passed to the <code>SunJSSE</code> default
+SunX509 <code>TrustManager</code> factory, the factory uses the
+following steps to try to find trust material:
+
+<ol>
+
+<li>If the <a href="#SystemProps">system property</a>:
+
+<blockquote>
+<pre>
+javax.net.ssl.trustStore
+</pre>
+</blockquote>
+
+defined, then the <code>TrustManagerFactory</code> attempts to find a
+file using the filename specified by that system property, and uses that
+file for the KeyStore.  If that file does not exist, then a default
+<code>TrustManager</code> using an empty keystore is created.  <P>
+
+<li> If that system property was not specified, then if the file
+
+<blockquote>
+<pre>
+&lt;java-home&gt;/lib/security/jssecacerts
+</pre>
+</blockquote>
+
+exists, that file is used. (See
+<a href="#javaHome">The Installation Directory &lt;java-home&gt;</a>
+for information about what <code>&lt;java-home&gt;</code> refers to.)
+Otherwise,<P>
+
+<li>if the file
+
+<blockquote>
+<pre>
+&lt;java-home&gt;/lib/security/cacerts
+</pre>
+</blockquote>
+
+exists, that file is used.
+
+</ol>
+
+<P> (If none of these files exists, that may be okay because there
+are SSL cipher suites which are anonymous, that is, which don't do
+any authentication and thus don't need a truststore.)
+
+<p>The factory looks for a file specified via the security property
+<code>javax.net.ssl.trustStore</code> or for the
+<code>jssecacerts</code> file before checking for
+a <code>cacerts</code>
+file so that you can provide a JSSE-specific set of trusted root
+certificates separate from ones that might be present in
+<code>cacerts</code> for code-signing purposes.
+
+</blockquote>
+</blockquote>
+
+
+
+<a name="X509TrustManager"></a>
+<H3><code>X509TrustManager</code> Interface</H3>
+
+<blockquote>
+
+<P> The <code>com.sun.net.ssl.X509TrustManager</code> interface extends
+the general <code>TrustManager</code> interface.
+It must be implemented by a trust manager for X.509-based
+authentication.
+
+<P> In order to support X.509 authentication of remote socket peers
+through JSSE, an instance of this interface must be passed to the
+<code>init</code> method of an <code>SSLContext</code> object.
+
+<H4>Creating an <code>X509TrustManager</code></H4>
+
+<blockquote>
+You can either implement this interface directly yourself or
+obtain one from a provider-based <code>TrustManagerFactory</code> (such as
+that supplied by the <code>SunJSSE</code> provider).  You could also
+implement your own that delegates to a factory-generated trust manager.
+For example, you might do this in order to filter the resulting trust decisions
+and query an end-user through a graphical user interface.
+
+</blockquote>
+
+</blockquote>
+
+
+<a name="KeyManagerFactory"></a>
+<H3><code>KeyManagerFactory</code> Class</H3>
+
+<blockquote>
+
+<P> To be able to authenticate yourself (a local secure socket peer) to
+a remote secure socket peer, you need to initialize an
+<code>SSLContext</code> object with one or more
+<code>KeyManager</code>s.  You need to pass one <code>KeyManager</code>
+for each different authentication mechanism that will be supported. If
+null is passed into the <code>SSLContext</code> initialization, no
+<code>KeyManager</code> will be available.  If the internal default
+context is used, a <a href="#CustomizingStores"> default KeyManager</A>
+is created.
+
+<P> Typically, there is a single key manager that supports
+authentication based on X.509 public key certificates. Some secure
+socket implementations may also support authentication based on shared
+secret keys, Kerberos, or other mechanisms.
+
+<p><code>com.sun.net.ssl.KeyManagerFactory</code> is an engine class
+for a provider-based service that acts as a factory for one or more
+types of <code>KeyManager</code> objects. The <code>SunJSSE</code>
+provider implements a factory which can return a basic X.509 key
+manager.  Because it is provider-based, additional factories can be
+implemented and configured to provide additional or alternate key
+managers.
+
+<H4>Creating a <code>KeyManagerFactory</code></H4>
+
+<blockquote>
+You create an instance of this class in a similar manner to
+<code>SSLContext</code>, except for passing an algorithm name string
+instead of a protocol name to the <code>getInstance</code> method:
+
+<blockquote>
+<pre>
+public static KeyManagerFactory
+                  getInstance(String algorithm);
+
+public static KeyManagerFactory
+                  getInstance(String algorithm,
+                              String provider);
+
+public static KeyManagerFactory
+                  getInstance(String algorithm,
+                              Provider provider);
+</pre>
+</blockquote>
+
+<P> A sample algorithm name string is:
+
+<blockquote><i><font face="Courier New,Courier">"SunX509"</font></i>
+</blockquote>
+
+<P> A sample call is the following:
+
+<blockquote>
+<pre>
+KeyManagerFactory kmf =
+    KeyManagerFactory.getInstance("SunX509", "SunJSSE");
+</pre>
+</blockquote>
+
+<P> The above call will create an instance of the <code>SunJSSE</code>
+provider's default key manager factory, which provides basic
+X.509-based authentication keys.
+
+<p>A newly-created factory should be initialized by calling the
+<code>init</code> method:
+
+<blockquote>
+<pre>
+public void init(KeyStore ks, char[] password);
+</pre>
+</blockquote>
+
+You may pass a KeyStore object, which the factory will query for
+information on which private key and matching public key certificates
+should be used for authenticating to a remote socket peer.
+In addition to the
+KeyStore object, you must also provide a second parameter which gives the
+password that will be used with the methods for accessing keys from the
+KeyStore. All keys in the KeyStore must be protected by the same password.
+
+<p>Some factories are capable of providing access to authentication
+material without having to be initialized with a KeyStore object. For example,
+they may access key material as part of a login mechanism such as one based
+on JAAS, the Java Authentication and Authorization Service.
+
+<p>The <code>SunJSSE</code> provider supports a "SunX509" factory that
+must be initialized with a KeyStore parameter.
+
+</blockquote>
+
+</blockquote>
+
+
+<a name="X509KeyManager"></a>
+<H3><code>X509KeyManager</code> Interface</H3>
+
+<blockquote>
+
+The <code>com.sun.net.ssl.X509KeyManager</code> interface extends the
+general <code>KeyManager</code> interface. It must be implemented by a
+key manager for X.509-based authentication. In order to support X.509
+authentication to remote socket peers through JSSE, an instance of this
+interface must be passed to the <code>init</code> method of an
+<code>SSLContext</code> object.
+
+<H4>Creating an <code>X509KeyManager</code></H4>
+
+<blockquote>
+You can either implement this interface directly yourself or
+obtain one from a provider-based <code>KeyManagerFactory</code> (such as
+that supplied by the <code>SunJSSE</code> provider). You could also
+implement your own that delegates to a factory-generated key manager.
+For example, you might do this in order to filter the resulting keys and
+query an end-user through a graphical user interface.</blockquote>
+</blockquote>
+
+
+</blockquote>
+</blockquote>
+
+<br>
+
+
+
+<a name="InstallationAndCustomization"></a>
+<H1>Installing and Customizing JSSE 1.0.3</H1>
+
+<blockquote>
+
+
+<P>
+<a name="Installation"></a>
+<H2>Installation</H2>
+
+<blockquote>
+
+<P> Instructions for installing JSSE 1.0.3 are provided at <a href=
+"http://java.sun.com/products/jsse/INSTALL.txt">
+http://java.sun.com/products/jsse/INSTALL.txt</a> and will not be
+repeated here. A brief summary of the steps to install JSSE 1.0.3 is:
+
+<ul>
+
+<li>Download the JSSE 1.0.3 files.
+<P>
+
+<li>Extract the download files.
+<P>
+
+<li>Install JSSE 1.0.3 as an extension to the Java 2 platform.
+See <a href="http://java.sun.com/j2se/1.3/docs/guide/extensions/index.html">
+http://java.sun.com/j2se/1.3/docs/guide/extensions/index.html</a>
+for more information on the Java 2 extension mechanism.
+<P>
+
+<li>Register the <code>SunJSSE</code> Cryptographic Service Provider (see
+<a href="#ProviderCust">Customizing the Provider Implementation</a>).
+<P>
+
+<li>Optionally install a JSSE-specific certificates file (keystore).
+You can create a keystore using <code>keytool</code>.
+See <a href="http://java.sun.com/j2se/1.3/docs/tooldocs/tools.html#security">
+http://java.sun.com/j2se/1.3/docs/tooldocs/tools.html#security</a>
+for information about that and other security tools.
+<P>
+
+<li>Optionally enable HTTPS support (see
+<a href="#HTTPSCust">Specifying an HTTPS Protocol Implementation</a>).
+<P>
+
+<li>Optionally test the installation (see
+<a href="#TestInstall">Testing the Installation</a>).
+
+</ul>
+
+<P> The following sections provide some additional
+installation-specific information and guidance,
+followed by information about how to do optional customizations.
+
+
+<a name="javaHome"></a>
+<H3>The Installation Directory &lt;java-home&gt;</H3>
+
+<blockquote>
+
+<P> The term <code>&lt;java-home&gt;</code> is used throughout this
+document to refer to the directory where the JRE is
+installed. It is determined based on whether you are running
+JSSE 1.0.3 on a JRE with or without the
+Java<SUP><FONT SIZE="-2">TM</FONT></SUP> 2 SDK installed.
+Java 2 SDK includes the JRE, but it is located in a different
+level in the file hierarchy.
+
+<P> The following are some examples of which directories
+<code>&lt;java-home&gt;</code> refers to:
+
+<ul>
+
+<li>On Solaris, if Java 2 SDK is installed in
+<code>/home/user1/jdk1.3.1</code>, then
+<code>&lt;java-home&gt;</code> is
+
+<blockquote>
+<pre>
+/home/user1/jdk1.3.1/jre
+</pre>
+</blockquote>
+
+<P>
+
+<li>On Solaris, if JRE is installed in
+<code>/home/user1/jre1.3.1</code> and Java
+2 SDK is <i>not</i> installed, then
+<code>&lt;java-home&gt;</code> is
+
+<blockquote>
+<pre>
+/home/user1/jre1.3.1
+</pre>
+</blockquote>
+<P>
+
+<li>On Win32 platforms, if Java 2 SDK is installed in
+<code>C:\jdk1.3.1</code>, then
+<code>&lt;java-home&gt;</code> is
+
+<blockquote>
+<pre>
+C:\jdk1.3.1\jre
+</pre>
+</blockquote>
+<P>
+
+<li>On Win32 platforms, if JRE is installed in
+<code>C:\jre1.3.1</code> and Java 2
+SDK is <i>not</i> installed, then
+<code>&lt;java-home&gt;</code> is
+
+<blockquote>
+<pre>
+C:\jre1.3.1
+</pre>
+</blockquote>
+
+</ul>
+
+<P> Note: When using a different Java 2 version (e.g., 1.2.x, which is no
+longer supported),
+replace jdk1.3.1 with the other Java 2 SDK version name (e.g., jdk1.2.x)
+and jre1.3.1 with the other JRE version name (e.g., jre1.2.x) in the above
+examples.
+
+</blockquote>
+
+
+
+<H3>Creating a Certificates File to Use With Navigator or Internet Explorer</H3>
+
+<blockquote>
+
+<P> When creating a certificates file to interact with Netscape
+Navigator or Microsoft Internet Explorer (IE), there is a
+common source of confusion. By default, keytool issues
+DSA public keys, but Navigator and IE do not recognize
+DSA public keys as part of their authentication procedures.
+
+<P> If you wish to interact with Navigator or IE, you will want to
+issue RSA keys. To do this, you need to specify the <code>-keyalg</code>
+RSA option when using keytool. For example:
+
+<blockquote>
+<pre>
+keytool -genkey -alias duke -keystore testkeys -keyalg rsa
+</pre>
+</blockquote>
+
+</blockquote>
+
+
+
+<H3>Special Considerations for Bundled Extensions</H3>
+
+<blockquote>
+
+<P> The preferred method of installing JSSE 1.0.3 is as an "installed"
+extension, but it is possible to make it "bundled" instead.
+If you install the JSSE JAR files as bundled
+extensions, there are a few special considerations noted here.
+For more information about bundled extensions, see
+<a href=
+"http://java.sun.com/j2se/1.3/docs/guide/extensions/spec.html#bundled">
+Bundled Extensions</a>.
+<ul>
+
+<li> If you bundle the JSSE JAR files with your application or applet,
+you must specify the relative URL to the JAR files in the
+<code>Class-Path</code> header of the manifest for the app. <P>
+
+<li> It is also possible to instead make the JAR files available by
+placing them in a directory on the class path. Ensure the CLASSPATH
+environment variable includes the directory containing the files.<P>
+
+<li>
+<a href=
+"http://java.sun.com/j2se/1.3/docs/guide/security/permissions.html">
+Permissions</a> do not need to be granted to installed extensions,
+since the default system <a href=
+"http://java.sun.com/j2se/1.3/docs/guide/security/PolicyFiles.html">
+policy file</a> grants all permissions to installed extensions.  But if
+you install the JSSE 1.0.3 JAR files as bundled extensions, and applets
+or applications using JSSE 1.0.3 will be run while a security manager
+is installed, you will need to grant the JSSE JAR files appropriate
+permissions.  (Note: There is typically a security manager installed
+whenever an applet is running, and a security manager may be installed
+for an application either via code in the application itself or via a
+command-line argument.)
+
+<P> One way of finding out what permissions are needed is simply by trying
+to run the app and seeing which "inadequate permissions" errors you get.
+
+<P> For your initial app testing, you can grant
+<code>java.security.AllPermission</code>. Here is an example of a
+statement granting AllPermission to the the <code>jsse.jar</code> file:
+
+<blockquote>
+<pre>
+grant codeBase "jsse.jar" {
+    permission java.security.AllPermission;
+};
+</pre>
+</blockquote>
+
+</ul>
+
+</blockquote>
+
+
+
+<a name="TestInstall"></a>
+<H3>Testing the Installation</H3>
+
+<blockquote>
+
+<P>To test the installation, try compiling and running a simple program
+that uses the JSSE 1.0.3 API. For example, the sample
+<code>JSSE_install_check</code> program that follows sets up an
+<code>SSLServerSocket</code> and gets a list of the cipher suites that
+are available for the socket.  If you can compile and run
+<code>JSSE_install_check</code>, JSSE is installed properly. Please
+note: This program may take a little while to complete execution.
+
+<blockquote>
+<pre>
+import java.net.*;
+import javax.net.ssl.*;
+
+public class JSSE_install_check {
+
+    public static void main(String[] args) throws Exception {
+
+	SSLServerSocketFactory factory =
+	    (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+
+	SSLServerSocket sslSocket =
+	    (SSLServerSocket)factory.createServerSocket(5757);
+
+	String [] cipherSuites = sslSocket.getEnabledCipherSuites();
+
+	for (int i = 0; i &lt; cipherSuites.length; i++) {
+	    System.out.println(&quot;Cipher Suite &quot; + i +
+		&quot; = &quot; + cipherSuites[i]);
+	}
+    }
+}
+</pre>
+</blockquote>
+
+</blockquote>
+
+
+
+</blockquote>
+
+
+<a name="Customization"></a>
+<H2>Customization</H2>
+
+<blockquote>
+
+<P> JSSE 1.0.3 includes a reference implementation that all users
+can utilize. If desired, it is also possible to customize a number of
+aspects of JSSE 1.0.3, plugging in different implementations or
+specifying the default keystore, etc.
+The table below summarizes which aspects can be customized, what the
+defaults are, which mechanisms are used to provide customization,
+and which users (domestic only, or all) can do the specified customizations.
+The first column of the table provides links to more detailed
+descriptions of each designated aspect and how to customize it.
+
+<P> Some of the customizations are done by setting system property or
+security property values. Sections following the table explain
+how to set such property values.
+
+<blockquote>
+<hr>
+<b>IMPORTANT NOTE: Many of the properties shown in this table are
+currently utilized by the JSSE 1.0.3 reference implementation, but
+there is no guarantee that they will continue to have the same names
+and types (system or security) or even that they will exist at all in
+future releases.  All such properties are flagged with an "*".  They
+are documented here for your convenience for use with the JSSE 1.0.3
+reference implementation.</b>
+<hr> </blockquote>
+
+</blockquote>
+</blockquote>
+
+<P>
+<br>
+
+<B><P ALIGN="CENTER">JSSE 1.0.3 Customization</B>
+<P>
+
+<TABLE BORDER CELLSPACING=1 CELLPADDING=7>
+
+<TR><TD WIDTH="26%" VALIGN="TOP">
+<B><P ALIGN="CENTER">Customizable Item</B></TD>
+<TD WIDTH="26%" VALIGN="TOP">
+<B><P ALIGN="CENTER">Default</B></TD>
+<TD WIDTH="32%" VALIGN="TOP">
+<B><P ALIGN="CENTER">How Customize</B></TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<B><P ALIGN="CENTER">Which Users Can Customize</B></TD>
+</TR>
+
+<TR><TD WIDTH="26%" VALIGN="TOP">
+<a href="#X509CCust"><B>X509Certificate</B> implementation</a></TD>
+<TD WIDTH="26%" VALIGN="TOP">
+<P>Implementation from JSSE reference implementation </TD>
+<TD WIDTH="32%" VALIGN="TOP">
+<I><P>cert.provider.x509v1</I>security property</TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<P>All</TD>
+</TR>
+
+<TR><TD WIDTH="26%" VALIGN="TOP">
+<a href="#HTTPSCust"><B>HTTPS protocol</B> implementation</a></TD>
+<TD WIDTH="26%" VALIGN="TOP">
+<P>None.</TD>
+<TD WIDTH="32%" VALIGN="TOP">
+<I><P>java.protocol.handler.pkgs</I> system property</TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<P>All</TD>
+</TR>
+
+<TR><TD WIDTH="26%" VALIGN="TOP">
+<a href="#ProviderCust"><B>provider</B> implementation</a></TD>
+<TD WIDTH="26%" VALIGN="TOP">
+<P>SunJSSE</TD>
+<TD WIDTH="32%" VALIGN="TOP">
+<P>A <I>security.provider.n= </I>line in security properties file.
+See description.
+</TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<P>See description</TD>
+</TR>
+
+<TR><TD WIDTH="26%" VALIGN="TOP">
+<a href="#CustomizingSSF">
+<B>default SSLSocketFactory</B> implementation</a></TD>
+<TD WIDTH="26%" VALIGN="TOP">
+<P>Implementation from JSSE reference implementation </TD>
+<TD WIDTH="32%" VALIGN="TOP">
+<I><P>ssl.SocketFactory.provider</I> security property</TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<P>Domestic only</TD>
+</TR>
+
+<TR><TD WIDTH="26%" VALIGN="TOP">
+<a href="#CustomizingSSSF">
+<B>default SSLServerSocketFactory</B> implementation</a></TD>
+<TD WIDTH="26%" VALIGN="TOP">
+<P>Implementation from JSSE reference implementation </TD>
+<TD WIDTH="32%" VALIGN="TOP">
+<I><P>ssl.ServerSocketFactory.provider</I> security property</TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<P>Domestic only</TD>
+</TR>
+
+<TR><TD WIDTH="26%" VALIGN="TOP">
+<a href="#CustomizingStores">
+<B>default keystore</B></a></TD>
+<TD WIDTH="26%" VALIGN="TOP">
+<P>None.
+</TD>
+<TD WIDTH="32%" VALIGN="TOP">
+<P>* <I>javax.net.ssl.keyStore</I> system property</TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<P>All</TD>
+</TR>
+
+<TR><TD WIDTH="26%" VALIGN="TOP">
+<a href="#CustomizingStores">
+<B>default keystore type</B></a>
+</TD>
+<TD WIDTH="26%" VALIGN="TOP">
+<FONT SIZE=2><P>KeyStore.getDefaultType()</FONT></TD>
+<TD WIDTH="32%" VALIGN="TOP">
+<P>* <I>javax.net.ssl.keyStoreType</I> system property</TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<P>All</TD>
+</TR>
+
+<TR><TD WIDTH="26%" VALIGN="TOP">
+<a href="#CustomizingStores">
+<B>default keystore password</B></a>
+</TD>
+<TD WIDTH="26%" VALIGN="TOP">
+<P>None.</TD>
+<TD WIDTH="32%" VALIGN="TOP">
+<P>* <I>javax.net.ssl.keyStorePassword</I> system property</TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<P>All</TD>
+</TR>
+
+<TR><TD WIDTH="26%" VALIGN="TOP">
+<a href="#CustomizingStores">
+<B>default truststore</B></a></TD>
+<TD WIDTH="26%" VALIGN="TOP">
+<P>jssecacerts, if it exists. Otherwise, cacerts </TD>
+<TD WIDTH="32%" VALIGN="TOP">
+<P>* <I>javax.net.ssl.trustStore</I> system property</TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<P>All</TD>
+</TR>
+
+<TR><TD WIDTH="26%" VALIGN="TOP">
+<a href="#CustomizingStores">
+<B>default truststore type</B></a></TD>
+<TD WIDTH="26%" VALIGN="TOP">
+<FONT SIZE=2><P>KeyStore.getDefaultType()</FONT></TD>
+<TD WIDTH="32%" VALIGN="TOP">
+<P>* <I>javax.net.ssl.trustStoreType</I> system property</TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<P>All</TD>
+</TR>
+
+<TR><TD WIDTH="26%" VALIGN="TOP">
+<a href="#CustomizingStores">
+<B>default truststore password</B></a></TD>
+<TD WIDTH="26%" VALIGN="TOP">
+<P>None.</TD>
+<TD WIDTH="32%" VALIGN="TOP">
+<P>* <I>javax.net.ssl.trustStorePassword</I> system property</TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<P>All</TD>
+</TR>
+
+<TR><TD WIDTH="26%" VALIGN="TOP">
+<a href="#DefaultKTMCust">
+<B>default key manager algorithm name</B></a></TD>
+<TD WIDTH="26%" VALIGN="TOP">
+<P>"SunX509"</TD>
+<TD WIDTH="32%" VALIGN="TOP">
+<I>* sun.ssl.keymanager.type</I> security property</TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<P>All</TD>
+</TR>
+
+<TR><TD WIDTH="26%" VALIGN="TOP">
+<a href="#DefaultKTMCust">
+<B>default trust manager algorithm name</B></a></TD>
+<TD WIDTH="26%" VALIGN="TOP">
+<P>"SunX509"</TD>
+<TD WIDTH="32%" VALIGN="TOP">
+<I>* sun.ssl.trustmanager.type</I> security property</TD>
+<TD WIDTH="16%" VALIGN="TOP">
+<P>All</TD>
+</TR>
+</TABLE>
+
+
+<blockquote>
+
+<P>* This property is currently used by the JSSE 1.0.3 reference implementation.
+It is not guaranteed to be examined and used by other implementations. If it
+<I>is</I> examined by an implementation in JSSE 1.0.3, that implementation
+should handle it in the same manner as the JSSE 1.0.3  reference implementation
+does. There is no guarantee the property will continue to exist or be of the
+same type (system or security) in future releases.
+
+<br>
+
+
+<a name="SystemProps"></a>
+<H3>How to Specify a System Property</H3>
+
+<blockquote>
+
+<P> Some aspects of JSSE 1.0.3 may be customized by setting system
+properties.
+You can set a system property either statically or dynamically:
+
+<ul>
+
+<li>To set a system property statically, use the <code>-D</code> option
+of the <code>java</code> command. For example, to run an application
+named <code>MyApp</code> and set
+the <code>javax.net.ssl.trustStore</code> system property
+to specify a <a href="#CustomizingStores">truststore</a> named
+"<code>MyCacertsFile</code>", type the following:
+
+<blockquote>
+<pre>
+java -Djavax.net.ssl.trustStore=MyCacertsFile MyApp
+</pre>
+</blockquote>
+<P>
+
+<li>To set a system property dynamically, call the
+<code>java.lang.System.setProperty</code> method in your code:
+
+<blockquote>
+<pre>
+System.setProperty(<i>propertyName</i>,
+    "<i>propertyValue</i>");
+</pre>
+</blockquote>
+
+substituting the appropriate property name and value.
+For example, a <code>setProperty</code> call corresponding to the
+previous example for setting
+the <code>javax.net.ssl.trustStore</code> system property
+to specify a truststore named "<code>MyCacertsFile</code>" would be:
+
+<blockquote>
+<pre>
+System.setProperty("javax.net.ssl.trustStore",
+    "MyCacertsFile");
+</pre>
+</blockquote>
+
+</ul>
+
+</blockquote>
+
+
+<a name="SecurityProps"></a>
+<H3>How to Specify a Security Property</H3>
+
+<blockquote>
+
+<P> Some aspects of JSSE 1.0.3 may be customized by setting security
+properties.
+You can set a security property either statically or dynamically:
+
+<ul>
+
+<li>To set a security property statically, add a line to
+the security properties file. The security properties file is located at:
+
+<blockquote>
+<pre>
+&lt;java-home&gt;/lib/security/java.security
+</pre>
+</blockquote>
+
+where <tt>&lt;java-home&gt;</tt> refers to the directory where the
+JRE runtime software is installed, as described in
+<a href="#javaHome">The Installation Directory &lt;java-home&gt;</a>.
+
+<P> To specify a security property value in the security properties file,
+you add a line of the following form:
+
+<blockquote>
+<pre>
+<i>propertyName</i>=<i>propertyValue</i>
+</pre>
+</blockquote>
+
+<P> For example, suppose you are a domestic user and you
+want to specify that a particular
+<code>SSLSocketFactory</code> implementation be returned whenever the
+<code>SSLSocketFactory.getDefault</code> method is called.
+You do this by specifying
+the name (and package) of the <code>SSLSocketFactory</code>
+implementation's class as the value of a security property
+named <code>ssl.SocketFactory.provider</code>.
+Suppose the
+implementation class is called <code>MySSLSocketFactoryImpl</code> and
+it appears in the <code>com.cryptox</code> package. Then
+you should place the following in the security properties file:
+
+<blockquote>
+<pre>
+ssl.SocketFactory.provider=com.cryptox.MySSLSocketFactoryImpl
+</pre>
+</blockquote>
+
+<P>
+
+
+<li>To set a security property dynamically, call the
+<code>java.security.Security.setProperty</code> method in
+your code:
+
+<blockquote>
+<pre>
+Security.setProperty(<i>propertyName</i>,
+    "<i>propertyValue</i>");
+</pre>
+</blockquote>
+
+substituting the appropriate property name and value.
+For example, a <code>setProperty</code> call corresponding to the
+previous example for specifying the <code>SSLSocketFactory</code> implementation
+would be:
+
+<blockquote>
+<pre>
+System.setProperty("ssl.SocketFactory.provider",
+    "com.cryptox.MySSLSocketFactoryImpl");
+</pre>
+</blockquote>
+
+</ul>
+
+</blockquote>
+
+
+
+<a name="X509CCust"></a>
+<H3>Customizing the X509Certificate Implementation</H3>
+
+<blockquote>
+
+<P>The X509Certificate implementation returned by the
+<code>X509Certificate.getInstance</code> method is by default
+the implementation from the JSSE 1.0.3 reference implementation.
+
+<P> You can optionally cause a different implementation to be
+returned. To do so, specify the name (and package) of the alternate
+implementation's class as the value of a
+<a href="#SecurityProps">security property</a>
+named <code>cert.provider.x509v1</code>.
+For example, if the class is called <code>MyX509CertificateImpl</code> and
+it appears in the <code>com.cryptox</code> package,
+you should place the following in the security properties file:
+
+<blockquote>
+<pre>
+cert.provider.x509v1=com.cryptox.MyX509CertificateImpl
+</pre>
+</blockquote>
+
+</blockquote>
+
+
+<a name="HTTPSCust"></a>
+<H3>Specifying an HTTPS Protocol Implementation</H3>
+
+<blockquote>
+
+<P> It is possible to access secure communications through the standard
+Java URL API. That is,
+you can communicate securely with an SSL-enabled web server by using
+the "https" URL protocol or scheme using the <code>java.net.URL</code> class.
+
+<P> In order to be able to do this, you need to have an
+"https" URLStreamHandler implementation and you must add the
+handler's implementation package name to the list of
+packages which are searched by the Java URL class. This is configured
+via the <code>java.protocol.handler.pkgs</code>
+<a href="#SystemProps">system property</a>.
+See the <code>java.net.URL</code> class documentation for details.
+
+<P> The JSSE 1.0.3 reference implementation provides an
+"https" URLStreamHandler implementation. Here is an example of how you would
+set the <code>java.protocol.handler.pkgs</code> property on the command line
+to indicate the JSSE 1.0.3 reference implementation's
+"https" URLStreamHandler:
+
+<pre>
+java -Djava.protocol.handler.pkgs=com.sun.net.ssl.internal.www.protocol
+  myApp
+</pre>
+
+Note: This should all be typed on one line. It appears here on multiple
+lines only for legibility purposes.
+
+</blockquote>
+
+
+<a name="ProviderCust"></a>
+<H3>Customizing the Provider Implementation</H3>
+
+<blockquote>
+
+<P> JSSE 1.0.3 comes standard with a Cryptographic Service Provider, or
+<i>provider</i> for short, named "<code>SunJSSE</code>". Providers are
+essentially packages that implement one or more engine classes for
+specific cryptographic algorithms.  The JSSE 1.0.3 engine classes are
+<code>SSLContext</code>, <code>KeyManagerFactory</code>, and
+<code>TrustManagerFactory</code>.  For more information on providers
+and engine classes, see the "Design Principles" and "Concepts" sections
+of the <a
+href="http://java.sun.com/j2se/1.3/docs/guide/security/CryptoSpec.html">
+Java<SUP><FONT SIZE="-2">TM</FONT></SUP> Cryptography Architecture API
+Specification & Reference</a>.
+
+<P> In order to be used, a provider must be registered, either
+statically or dynamically.
+
+<H4>Registering the Cryptographic Service Provider Statically</H4>
+
+<blockquote>
+
+You register a provider statically by adding a line of the following
+form to the <a href="#SecurityProps">security properties file</a>:
+
+<blockquote>
+<pre>
+security.provider.<i>n</i>=<i>providerClassName</i>
+</pre>
+</blockquote>
+
+<P> This declares a provider, and specifies its preference order "n".
+The preference order is the order in which providers are
+searched for requested algorithms (when no specific provider is
+requested).  The order is 1-based; 1 is the most preferred,
+followed by 2, and so on.
+
+<P> The <i>providerClassName</i> is the fully qualified name of the
+provider class. You get this name from the provider vendor.
+
+<P> To register <code>SunJSSE</code> you
+add the above line to the security properties file, replacing
+<i>providerClassName</i> with
+<code>com.sun.net.ssl.internal.ssl.Provider</code>,
+and substituting <i>n</i> with the priority that you would like to
+assign to the "<code>SunJSSE</code>" provider.
+For example, to keep the standard provider shipped with the Java 2 platform
+and give it preference order 1, and add <code>SunJSSE</code> as the
+second preferred provider, the following two lines should appear
+in the security properties file:
+
+<blockquote>
+<pre>
+security.provider.1=sun.security.provider.Sun
+security.provider.2=com.sun.net.ssl.internal.ssl.Provider
+</pre>
+</blockquote>
+
+<P> To utilize another JSSE 1.0.3 provider, add a line registering the
+alternate provider, giving it whatever preference order you prefer.
+
+<P> You can have more than one JSSE 1.0.3 provider registered at the
+same time. They may include different implementations for
+different algorithms for different engine classes, or they may
+have support for some or all of the same types of algorithms and
+engine classes. When a particular engine class
+implementation for a particular algorithm is searched for,
+if no specific provider is specified for the search, the providers are
+searched in preference order and
+the implementation from the first provider
+that supplies an implementation for the specified algorithm is used.
+
+</blockquote>
+
+
+<H4>Registering the Cryptographic Service Provider Dynamically</H4>
+
+<blockquote>
+
+<P> Instead of registering a provider statically, you can add the
+provider dynamically at runtime by calling the
+<code>Security.addProvider</code> method at the beginning of your
+program.  For example, to add the <code>SunJSSE</code> provider
+dynamically, you would call:
+
+<blockquote>
+<pre>
+Security.addProvider(
+  new com.sun.net.ssl.internal.ssl.Provider());
+</pre>
+</blockquote>
+
+<P> The <code>Security.addProvider</code> method adds the specified
+provider to the next available preference position.
+
+<P> This type of registration is not persistent and can only be
+done by a program with sufficient permissions.
+
+</blockquote>
+
+</blockquote>
+
+
+
+<a name="CustomizingSSF"></a>
+<H3>Customizing the Default <code>SSLSocketFactory</code> Implementation</H3>
+
+<blockquote>
+
+<P>The <code>SSLSocketFactory</code> implementation returned by the
+<code>SSLSocketFactory.getDefault</code> method is by default
+the implementation from the JSSE 1.0.3 reference implementation.
+
+<P> If you are a domestic user (in the U.S. or Canada),
+you can optionally cause a different implementation to be
+returned. To do so, specify the name (and package) of the alternate
+implementation's class as the value of a
+<a href="#SecurityProps">security property</a>
+named <code>ssl.SocketFactory.provider</code> in the security properties file.
+For example, if the class is called <code>MySSLSocketFactoryImpl</code> and
+it appears in the <code>com.cryptox</code> package,
+you should place the following in the security properties file:
+
+<blockquote>
+<pre>
+ssl.SocketFactory.provider=com.cryptox.MySSLSocketFactoryImpl
+</pre>
+</blockquote>
+
+<P> Note: If you are global (non-domestic) user, you cannot replace the
+default <code>SSLSocketFactory</code> implementation. If you try (by
+putting a line in the security properties file such as the one shown
+above), the implementation you specify will not be used and you will
+get a message like "SSL implementation not available" whenever you try
+to use the <code>SSLSocketFactory</code> returned by
+<code>SSLSocketFactory.getDefault</code>.  Similarly, if you are a
+global user and you get an <code>SSLContext</code> from a JSSE 1.0.3
+provider other than <code>SunJSSE</code>, that provider's
+<code>SSLContext</code> implementation should not return an
+<code>SSLSocketFactory</code> implementation other than the
+<code>SunJSSE</code> one when you call
+<code>SSLContext.getSocketFactory</code>. If the provider returns a
+non-<code>SunJSSE</code> implementation, you will get a runtime
+exception.
+
+</blockquote>
+
+
+<a name="CustomizingSSSF"></a>
+<H3>Customizing the Default <code>SSLServerSocketFactory</code> Implementation</H3>
+
+<blockquote>
+
+<P>The <code>SSLServerSocketFactory</code> implementation returned by the
+<code>SSLServerSocketFactory.getDefault</code> method is by default
+the implementation from the JSSE 1.0.3 reference implementation.
+
+<P> If you are a domestic user (in the U.S. or Canada),
+you can optionally cause a different implementation to be
+returned. To do so, specify the name (and package) of the alternate
+implementation's class as the value of a
+<a href="#SecurityProps">security property</a>
+named <code>ssl.ServerSocketFactory.provider</code>
+in the security properties file. For example, if the class is called
+<code>MySSLServerSocketFactoryImpl</code> and
+it appears in the <code>com.cryptox</code> package,
+you should place the following in the security properties file:
+
+<pre>
+  ssl.ServerSocketFactory.provider=com.cryptox.MySSLServerSocketFactoryImpl
+</pre>
+
+<P> Note: If you are a global (non-domestic) user, you cannot replace
+the default <code>SSLServerSocketFactory</code> implementation. If you
+try (by putting a line in the security properties file such as the one
+shown above), the implementation you specify will not be used and you
+will get a message like "SSL implementation not available" whenever you
+try to use the <code>SSLServerSocketFactory</code> returned by
+<code>SSLServerSocketFactory.getDefault</code>.  Similarly, if you are
+a global user and you get an <code>SSLContext</code> from a JSSE 1.0.3
+provider other than <code>SunJSSE</code>, that provider's
+<code>SSLContext</code> implementation should not return an
+<code>SSLServerSocketFactory</code> implementation other than the
+<code>SunJSSE</code> one when you call
+<code>SSLContext.getSocketFactory</code>. If the provider returns a
+non-<code>SunJSSE</code> implementation, you will get a runtime
+exception.
+
+</blockquote>
+
+
+<a name="CustomizingStores"></a>
+<H3>Customizing the Default Key and Trust Stores, Store Types, and
+Store Passwords</H3>
+
+<blockquote>
+
+<P> Whenever a default <code>SSLSocketFactory</code> or
+<code>SSLServerSocketFactory</code> is created (via a call to
+<code>SSLSocketFactory.getDefault</code> or
+<code>SSLServerSocketFactory.getDefault</code>), and this default
+<code>SSLSocketFactory</code> (or <code>SSLServerSocketFactory</code>)
+comes from the JSSE reference implementation, a default
+<code>SSLContext</code> is associated with the socket factory. (The
+default socket factory will come from the JSSE reference implementation
+unless a security property specifies a different implementation, as
+described in <a href="#CustomizingSSF">Customizing the Default
+<code>SSLSocketFactory</code> Implementation</a> and <a
+href="#CustomizingSSSF">Customizing the Default
+<code>SSLServerSocketFactory</code> Implementation</a>.)
+
+<P> This default <code>SSLContext</code> is initialized with a
+<code>KeyManager</code> and a <code>TrustManager</code>. If a <a href=
+"#Stores">keystore</a> is specified by the
+<code>javax.net.ssl.keyStore</code> <a href="#SystemProps">system
+property</a>, then the <code>KeyManager</code> created by the default
+<code>SSLContext</code> will be a <code>KeyManager</code>
+implementation for managing the specified keystore.  (The actual
+implementation will be as specified in <a
+href="#DefaultKTMCust">Customizing the Default Key and Trust
+Managers</a>.) If no such system property is specified, then the
+keystore managed by the <code>KeyManager</code> will be a new empty
+keystore.
+
+<P> Similarly, if a truststore is specified by the
+<code>javax.net.ssl.trustStore</code> system property, then the
+<code>TrustManager</code> created by the default
+<code>SSLContext</code> will be a <code>TrustManager</code>
+implementation for managing the specified truststore.  In this case, if
+such a property exists but the file it specifies doesn't, then no
+truststore is utilized.  If no <code>javax.net.ssl.trustStore</code>
+property exists, then a default truststore is searched for.  If a
+truststore named
+<code>&lt;java-home&gt;/lib/security/jssecacerts</code> is found, it is
+used. If not, then a truststore named
+<code>&lt;java-home&gt;/lib/security/cacerts</code> is searched for and
+used (if it exists).  See <a href="#javaHome">The Installation
+Directory &lt;java-home&gt;</a> for information as to what
+<code>&lt;java-home&gt;</code> refers to.  Finally, if a truststore is
+still not found, then the truststore managed by the
+<code>TrustManager</code> will be a new empty truststore.
+
+<P> If system properties <code>javax.net.ssl.keyStoreType</code> and/or
+<code>javax.net.ssl.keyStorePassword</code> are also specified, they
+are treated as the default <code>KeyManager</code> keystore type and
+password, respectively. If there is no type specified, the default type
+is that returned by <code>KeyStore.getDefaultType()</code>, which is
+the value of the <code>keystore.type</code> <a href=
+"#SecurityProps">security property</a>, or "jks" if no such security
+property is specified.  If there is no keystore password specified, it
+is assumed to be "".
+
+<P> Similarly, if system properties <code>javax.net.ssl.trustStoreType</code>
+and/or <code>javax.net.ssl.trustStorePassword</code>
+are also specified, they are treated as the default truststore type and
+password, respectively. If there is no type specified, the
+default type is that returned by <code>KeyStore.getDefaultType()</code>.
+If there is no truststore password specified,
+it is assumed to be "".
+
+<P> <b>Important Note:</b> This section describes the current
+JSSE 1.0.3 reference implementation behavior.
+The system properties described in this section
+are not guaranteed to continue to have the same names and types (system
+or security) or even to exist at all in future releases.
+They are also not guaranteed to be examined and used by any other
+JSSE 1.0.3 implementations. If they <I>are</I> examined by an implementation,
+that implementation should handle them in the same manner as the
+JSSE 1.0.3 reference implementation does, as described herein.
+
+</blockquote>
+
+
+<a name="DefaultKTMCust"></a>
+<H3>Customizing the Default Key and Trust Managers</H3>
+
+<blockquote>
+
+<P> As noted in <a href="#CustomizingStores"> Customizing the Default
+Key and Trust Stores, Store Types, and Store Passwords</a>, whenever a
+default <code>SSLSocketFactory</code> or
+<code>SSLServerSocketFactory</code> is created, and this default
+<code>SSLSocketFactory</code> (or <code>SSLServerSocketFactory</code>)
+comes from the JSSE reference implementation, a default
+<code>SSLContext</code> is associated with the socket factory.
+
+<P> This default <code>SSLContext</code> is initialized with a
+<code>KeyManager</code> and a <code>TrustManager</code>.  The
+<code>KeyManager</code> and/or <code>TrustManager</code> supplied to
+the default <code>SSLContext</code> will be a
+<code>KeyManager</code>/<code>TrustManager</code> implementation for
+managing the specified keystore/truststore, as described in the
+aforementioned section.
+
+<P> The <code>KeyManager</code> implementation chosen is determined by
+first examining the
+
+<blockquote>
+<pre>
+sun.SSL.keymanager.type
+</pre>
+</blockquote>
+
+<a href="#SecurityProps">security property</a>.
+If such a property value is specified, a <code>KeyManagerFactory</code>
+implementation for the specified algorithm is searched for. The
+implementation from the first provider that supplies an implementation
+is used. Its <code>getKeyManagers</code> method is called to determine
+the <code>KeyManager</code> to supply to the default
+<code>SSLContext</code>.  (Technically, <code>getKeyManagers</code>
+returns an array of <code>KeyManager</code>s, one
+<code>KeyManager</code> for each type of key material.) If there is no
+such security property value specified, the default value of "SunX509"
+is used to perform the search.  Note: A <code>KeyManagerFactory</code>
+implementation for the "SunX509" algorithm is supplied by the
+<code>SunJSSE</code> provider. The <code>KeyManager</code> it specifies
+is a <code>com.sun.net.ssl.X509KeyManager</code> implementation.
+
+<P> Similarly, the <code>TrustManager</code> implementation chosen is
+determined by first examining the
+
+<blockquote>
+<pre>
+sun.SSL.trustmanager.type
+</pre>
+</blockquote>
+
+security property. If such a property value is specified, a
+<code>TrustManagerFactory</code> implementation for the specified
+algorithm is searched for. The implementation from the first provider
+that supplies an implementation is used. Its
+<code>getTrustManagers</code> method is called to determine the
+<code>TrustManager</code> to supply to the default
+<code>SSLContext</code>.  (Technically, <code>getTrustManagers</code>
+returns an array of <code>TrustManager</code>s, one
+<code>TrustManager</code> for each type of trust material.) If there is
+no such security property value specified, the default value of
+"SunX509" is used to perform the search.  Note: A
+<code>TrustManagerFactory</code> implementation for the "SunX509"
+algorithm is supplied by the <code>SunJSSE</code> provider. The
+<code>TrustManager</code> it specifies is a
+<code>com.sun.net.ssl.X509TrustManager</code> implementation.
+
+<P> <b>Important Note:</b> This section describes the current JSSE
+1.0.3 reference implementation behavior.  The system properties
+described in this section are not guaranteed to continue to have the
+same names and types (system or security) or even to exist at all in
+future releases.  They are also not guaranteed to be examined and used
+by any other JSSE 1.0.3 implementations. If they <I>are</I> examined by
+an implementation, that implementation should handle them in the same
+manner as the JSSE 1.0.3 reference implementation does, as described
+herein.
+
+
+</blockquote>
+
+</blockquote>
+
+
+
+
+<a name="KeystoreFormats"></a>
+<h1>Additional Keystore Formats</h1>
+
+<blockquote>
+
+<P> The JSSE 1.0.3 <code>SunJSSE</code> provider supplies an implementation of
+the PKCS12 <code>java.security.KeyStore</code> format.
+This format is also supported by other toolkits and applications
+for importing and exporting keys and certificates. For example, Netscape
+4.x (versions 4.04 and later) can export client certificates and keys into
+a file using the ".p12" filename extension in PKCS12 format.
+
+<p>With the <code>SunJSSE</code> provider installed, you can access
+PKCS12 keys through the KeyStore API with a keystore type of "pkcs12"
+(or "PKCS12", the name is case-insensitive). In addition, you can list
+the installed keys using the <b>keytool</b> command with the
+<code>-storetype</code> option set to <code>pkcs12</code>.  (See <a
+href="http://java.sun.com/j2se/1.3/docs/tooldocs/tools.html#security">
+http://java.sun.com/j2se/1.3/docs/tooldocs/tools.html#security</a> for
+information about <b>keytool</b>.)
+
+<p>The 1.0.3 release of JSSE has limitations on its implementation but
+can read and use PKCS12 keystore files exported by Netscape Navigator.
+Future releases will also support and be tested with Internet Explorer
+and other applications.  See the README file for the release you are
+using for information as to its PKCS12-handling capabilities.
+</blockquote>
+
+
+
+<a name="Troubleshooting"></a>
+<h1>Troubleshooting</h1>
+
+<blockquote>
+
+<H2>Installation and Configuration Problems</H2>
+
+<blockquote>
+
+<a name="PkgNotFound"></a>
+<H3>JSSE Package Not Found During Compilation</H3>
+
+<blockquote>
+
+<P> <b>Problem</b>: When compiling a program that uses the JSSE 1.0.3
+packages, one of the following errors occur:
+
+<pre>
+    Package com.sun.net.ssl not found in import.
+
+    Package javax.net not found in import.
+
+    Package javax.net.ssl not found in import.
+
+    Package javax.security.cert not found in import.
+</pre>
+
+<P> <b>Cause</b>: The JSSE JAR files are not installed properly.
+
+<P> <b>Solution</b>: JSSE 1.0.3 is supplied as an extension to the Java
+2 platform. Its JAR files can be installed either as "installed"
+extensions (recommended) or as "bundled" extensions.  A JAR file is
+considered an "installed" extension if it is stored in a particular
+directory established for all installed extensions, as described in <a
+href="http://java.sun.com/products/jsse/INSTALL.txt">
+http://java.sun.com/products/jsse/INSTALL.txt</a>, and no class path
+modifications are needed.  "Bundled" extensions may be bundled with
+applications or made available in a separate directory. If they are
+bundled with an application, be sure to specify them in the Class-Path
+attribute in the application's manifest file. Otherwise, be sure to set
+the Java <code>CLASSPATH</code> variable correctly so the JSSE JAR
+files can be found.  For more information about bundled extensions, see
+<a href=
+"http://java.sun.com/j2se/1.3/docs/guide/extensions/spec.html#bundled">
+Bundled Extensions</a>.
+
+</blockquote>
+
+
+<H3>Runtime Exception: SSL Service Not Available</H3>
+
+<blockquote>
+
+<P> <b>Problem</b>: When running a program that uses JSSE 1.0.3, an
+exception occurs indicating that an SSL service is not available.
+For example, an exception similar to one of the following occurs:
+
+<pre>
+    Exception in thread "main"
+        java.net.SocketException: no SSL Server Sockets
+
+    Exception in thread "main":
+        SSL implementation not available
+</pre>
+
+<P> <b>Cause 1</b>: The cryptographic service provider is not registered
+properly.
+
+<P> <b>Solution 1</b>: Before using JSSE 1.0.3, you must register the
+<code>SunJSSE</code> provider, either statically by modifying the
+<code>java.security</code> file or dynamically by calling the
+<code>Security.addProvider</code> method, as described in
+<a href="http://java.sun.com/products/jsse/INSTALL.txt">
+http://java.sun.com/products/jsse/INSTALL.txt</a>.
+
+<P> <b>Cause 2</b>: There was a problem with <code>SSLContext</code>
+initialization, for example due to a corrupted keystore. (Note: One
+vendor has shipped a keystore in an unknown format, and that may cause
+this type of error.)
+
+<P> <b>Solution 2</b>: Check initialization parameters. Ensure any
+keystores specified are valid (e.g., by trying to use the
+<a href="http://java.sun.com/j2se/1.3/docs/tooldocs/tools.html#security">
+keytool</a> to examine them).
+
+</blockquote>
+
+
+<H3> Runtime Exception:  untrusted cert chains </H3>
+
+<blockquote>
+
+<P> <b>Problem</b>: When negotiating an SSL connection, the client or server
+throws one of the following exceptions:
+
+<pre>
+    javax.net.ssl.SSLException: untrusted server cert chain
+    javax.net.ssl.SSLException: untrusted client cert chain
+</pre>
+
+<P> <b>Cause 1</b>: This is generally caused by the remote side sending a
+certificate that is unknown to the local side.
+
+<P> <b>Solution 1</b>: The best way to
+debug this type of problem is to turn on debugging (see
+<a href="#Debug">Debugging Utilities</a>) and watch
+as certificates are loaded and when certificates are
+received via the network connection.  Most likely, the
+received certificate is unknown to the trust mechanism because
+the wrong trust file was loaded.
+
+<P> <b>Cause 2</b>: The system clock is not set correctly.
+<P> <b>Solution 2</b>: If the clock is not set correctly, the perceived
+time may be outside the validity period on one of the certificates,
+and unless the certificate can be replaced with a valid one from a
+truststore, the system must assume that the certificate is invalid,
+and therefore throw the exception.
+
+<P> <b>Cause 3</b>: Older versions of Java 2 Enterprise Edition use
+earlier versions of JSSE.  In particular, some previous versions of J2EE
+shipped with JSSE 1.0, which couldn't replace received expired
+certificates with current ones from a truststore.
+<P> <b>Solution 3</b>: Be sure that the new JSSE jar files occur
+in the class path(s) ahead of any older J2EE jar files.
+
+</blockquote>
+
+
+<H3>Runtime Exception: Class Definition Not Found</H3>
+
+<blockquote>
+
+<P> <b>Problem</b>: When running a program that uses JSSE 1.0.3, an
+exception occurs indicating that a JSSE class definition cannot
+be found. For example, an exception similar to the following occurs:
+
+<pre>
+    Exception in thread "main" java.lang.NoClassDefFoundError:
+        javax/net/ssl/SSLServerSocketFactory
+</pre>
+
+<P> <b>Cause</b>: The JSSE JAR files are not installed properly.
+
+<P> <b>Solution</b>: JSSE must be installed as an extension to the Java
+2 Platform. Install the JSSE JAR files as discussed in the Solution to
+the <a href="#PkgNotFound">JSSE Package Not Found During Compilation</a>
+problem shown above.
+
+</blockquote>
+
+
+<H3>Runtime Exception: No Cipher Suites in Common</H3>
+
+<blockquote>
+
+<P> <b>Problem</b>: When using Netscape Navigator or Microsoft
+Internet Explorer (IE) to access files on a server that only has
+DSA-based certificates, a runtime exception occurs indicating
+that there are no cipher suites in common.
+
+<P> <b>Cause</b>: By default, certificates created with keytool use
+DSA public keys. Navigator and IE do not use DSA public
+keys in their enabled cipher suites.
+
+<P> <b>Solution</b>: To interact with Navigator or IE, you should create
+certificates that use RSA-based keys. To do this, you need to specify
+the <code>-keyalg</code> RSA option when using keytool. For
+example:
+
+<pre>
+    keytool -genkey -alias duke -keystore testkeys -keyalg rsa
+</pre>
+
+</blockquote>
+
+</blockquote>
+
+
+<a name="Debug"></a>
+<H2>Debugging Utilities</H2>
+
+<blockquote>
+
+<P> JSSE provides dynamic debug tracing support. This is similar
+to the support used for debugging access control failures
+in the Java 2 platform. The generic Java dynamic debug tracing
+support is accessed with the system property
+<code>java.security.debug</code>, while the JSSE-specific dynamic
+debug tracing support is accessed with the system property
+<code>javax.net.debug</code>.
+
+<P> Note: The debug utility is not an officially supported
+feature of JSSE.
+
+<P> To view the options of either dynamic debug utility, set the
+value of the appropriate system property to <code>help</code>. For example,
+to get the options of the generic Java dynamic debug utility,
+use the following command-line option on the <code>java</code> command:
+
+<pre>
+    -Djava.security.debug=help
+</pre>
+<P> To get the options of the JSSE dynamic debug utility, use the
+following command-line option on the <code>java</code> command:
+
+<pre>
+    -Djavax.net.debug=help
+</pre>
+
+<P> Note: If you specify the value <code>help</code> with either dynamic
+debug utility when running a program that does not use
+any classes that the utility was designed to debug, you
+will not get the debugging options.
+
+<P> Here is a complete example of how to get a list of the debug options:
+
+<pre>
+    java -Djavax.net.debug=help <i>MyApp</i>
+</pre>
+
+<P> where <i>MyApp</i> is an application that uses some of the JSSE classes.
+<i>MyApp</i> will not run after the debug help information is printed,
+as the help code causes the application to exit.
+
+<P> Here are the current options:
+
+<blockquote>
+<pre>
+all        turn on all debugging
+ssl        turn on ssl debugging
+
+The following can be used with ssl:
+        record          enable per-record tracing
+        handshake       print each handshake message
+        keygen          print key generation data
+        session         print session activity
+        defaultctx      print default SSL initialization
+        sslctx          print SSLContext tracing
+        sessioncache    print session cache tracing
+        keymanager      print key manager tracing
+        trustmanager    print trust manager tracing
+
+handshake debugging can be widened with:
+        data            hex dump of each handshake message
+        verbose         verbose handshake message printing
+
+record debugging can be widened with:
+        plaintext       hex dump of record plaintext
+</pre>
+</blockquote>
+
+<P> The <code>javax.net.debug</code> property value must specify either
+<code>all</code> or <code>ssl</code>, optionally followed by
+debug specifiers. You can use one or more options.
+You do <i>not</i> have to have a separator between options, although a
+separator such as ":" or "," helps readability.
+It doesn't matter what separators you use, and the ordering of
+the option keywords is also not important.
+
+<H3>Examples</H3>
+
+<ul>
+
+<li> To view all debugging messages:
+
+<pre>
+    java -Djavax.net.debug=all MyApp
+</pre>
+
+<P>
+
+
+<li>To view the hexadecimal dumps of each handshake
+message, you can type the following, where the colons are optional:
+
+<pre>
+    java -Djavax.net.debug=ssl:handshake:data MyApp
+</pre>
+<P>
+
+<li>To view the hexadecimal dumps of each handshake
+message, and to print trust manager tracing,
+you can type the following, where the commas are optional:
+
+<pre>
+    java -Djavax.net.debug=SSL,handshake,data,trustmanager MyApp
+</pre>
+
+</ul>
+
+</blockquote>
+
+</blockquote>
+
+
+<a name="CodeExamples"></a>
+<h1>Code Examples</h1>
+
+<blockquote>
+
+<P> The sections below describe the following code examples:
+
+<ul>
+
+<li><a href="#UnsecureSecure">Converting an Unsecure Socket
+to a Secure Socket</a>
+
+<ul>
+<li><a href="#NoSSLSocket">Socket Example <i>Without</i> SSL</a>
+
+<li><a href="#WithSSLSocket">Socket Example <i>With</i> SSL</a><P>
+</ul>
+
+<li><a href="#SampleCode">Running the JSSE 1.0.3 Sample Code</a>
+
+<ul>
+<li><a href="#SecureConnSample">Sample Code Illustrating a Secure Socket
+Connection Between a Client and a Server</a>
+
+<ul>
+<li><a href="#SampleConfig">Configuration Requirements</a>
+
+<li><a href="#SSC">Running <code>SSLSocketClient</code></a>
+
+<li><a href="#SSCWT">Running
+<code>SSLSocketClientWithTunneling</code></a>
+
+<li><a href="#SSCWCA">Running
+<code>SSLSocketClientWithClientAuth</code></a>
+
+<li><a href="#SSCWCAnCFS">Running
+<code>SSLSocketClientWithClientAuth</code> With
+<code>ClassFileServer</code></a> </ul>
+
+<li><a href="#HTTPSSample">Sample Code Illustrating HTTPS Connections</a>
+
+<ul>
+<li><a href="#URLReader">Running URLReader</a>
+
+<li><a href="#URLReaderWO">Running URLReaderWithOptions</a>
+</ul>
+
+<li><a href="#RMISample">Sample Code Illustrating a Secure RMI
+Connection</a>
+
+</ul>
+
+</ul>
+
+
+<a name="UnsecureSecure"></a>
+<H2>Converting an Unsecure Socket to a Secure Socket</H2>
+
+<blockquote>
+
+<P> This section provides examples of source code that illustrate
+how to use JSSE to convert an unsecure socket connection to
+a secure socket connection. The code in this section is
+excerpted from the book <i>Java 2 Network Security</i> by Marco
+Pistoia, et. al.
+
+<P> First, "Socket Example Without SSL" shows
+sample code that can be used to set up communication
+between a client and a server using unsecure sockets. This
+code is then modified in "Socket Example With
+SSL" to use JSSE to set up secure socket communication.
+
+<a name="NoSSLSocket"></a>
+<H3>Socket Example <i>Without</i> SSL</H3>
+
+<blockquote>
+
+<H4>Server Code for Unsecure Socket Communications</H4>
+
+<P> When writing a Java program that acts as a server and communicates
+with a client using sockets, the socket communication
+is set up with code similar to the following:
+
+<blockquote>
+<pre>
+import java.io.*;
+import java.net.*;
+
+. . .
+
+int port = availablePortNumber;
+
+ServerSocket s;
+
+try {
+    s = new ServerSocket(port);
+    Socket c = s.accept();
+
+    OutputStream out = c.getOutputStream();
+    InputStream in = c.getInputStream();
+
+    // Send messages to the client through
+    // the OutputStream
+    // Receive messages from the client
+    // through the InputStream
+}
+
+catch(IOException e) {
+}
+</pre>
+</blockquote>
+
+
+<H4>Client Code for Unsecure Socket Communications</H4>
+
+<P> The client code to set up communication with a server using
+sockets is similar to the following:
+
+<blockquote>
+<pre>
+import java.io.*;
+import java.net.*;
+
+. . .
+
+int port = availablePortNumber;
+String host = "hostname";
+
+try {
+    s = new Socket(host, port);
+
+    OutputStream out = s.getOutputStream();
+    InputStream in = s.getInputStream();
+
+    // Send messages to the server through
+    // the OutputStream
+    // Receive messages from the server
+    // through the InputStream
+}
+
+catch(IOException e) {
+}
+</pre>
+</blockquote>
+
+</blockquote>
+
+
+<a name="WithSSLSocket"></a>
+<H3>Socket Example <i>With</i> SSL</H3>
+
+<blockquote>
+
+<H4>Server Code for Secure Socket Communications</H4>
+
+<P> When writing a Java program that acts as a server and communicates
+with a client using secure sockets, the socket communication
+is set up with code similar to the following. Differences between this
+program and the one for communication using unsecure sockets are
+highlighted in bold.
+
+<blockquote>
+<pre>
+import java.io.*;
+import <b>javax.net.ssl.*</b>;
+
+. . .
+
+int port = availablePortNumber;
+
+<b>SSLServerSocket</b> s;
+
+try {
+    <b>SSLServerSocketFactory sslSrvFact =
+        (SSLServerSocketFactory)
+        SSLServerSocketFactory.getDefault();
+    s =(SSLServerSocket)sslSrvFact.createServerSocket(port);</b>
+
+    <b>SSLSocket</b> c = <b>(SSLSocket)</b>s.accept();
+
+    OutputStream out = c.getOutputStream();
+    InputStream in = c.getInputStream();
+
+    // Send messages to the client through
+    // the OutputStream
+    // Receive messages from the client
+    // through the InputStream
+}
+
+catch(IOException e) {
+}
+</pre>
+</blockquote>
+
+
+<H4>Client Code for Secure Socket Communications</H4>
+
+<P> The client code to set up communication with a server using
+secure sockets is similar to the following, where differences with
+the unsecure version are highlighted in bold:
+
+<blockquote>
+<pre>
+import java.io.*;
+import <b>javax.net.ssl.*</b>;
+
+. . .
+
+int port = availablePortNumber;
+String host = "hostname";
+
+try {
+    <b>SLSocketFactory sslFact =
+      (SSLSocketFactory)SSLSocketFactory.getDefault();
+    SSLSocket s =
+      (SSLSocket)sslFact.createSocket(host, port);</b>
+
+    OutputStream out = s.getOutputStream();
+    InputStream in = s.getInputStream();
+
+    // Send messages to the server through
+    // the OutputStream
+    // Receive messages from the server
+    // through the InputStream
+}
+
+catch(IOException e) {
+}
+</pre>
+</blockquote>
+
+</blockquote>
+
+</blockquote>
+
+
+
+<a name="SampleCode"></a>
+<H2>Running the JSSE 1.0.3 Sample Code</H2>
+
+<blockquote>
+
+<P> The sample programs provided with the JSSE 1.0.3 download
+illustrate how to use JSSE to:
+<P>
+
+<ul>
+
+<li><a href="#SecureConnSample">
+Create a secure socket connection between a client and a server</a>
+<P>
+
+<li><a href="#HTTPSSample">Create a secure connection to an HTTPS Web site</a>
+<P>
+
+<li><a href="#RMISample">Use secure communications with RMI</a>
+
+</ul>
+
+<P> When using the sample code, be aware that the sample programs
+are designed to illustrate how to use JSSE. They are
+not designed to be robust applications.
+
+<P> Note: Setting up secure communications involves complex
+algorithms. The sample programs provide no feedback
+during the setup process. When running the
+programs, be patient: you may not see any output for a
+while. If you run the programs with the system
+property <code>javax.net.debug</code> set to <code>all</code>, you will see
+more feedback.
+
+<P> All of the sample code is available in the directory
+<code>&lt;ExtractDir&gt;/samples</code>,
+where <code>&lt;ExtractDir&gt;</code> is the directory where you
+extracted the downloaded sample files.
+See the README.txt file for more information on using these
+applications.
+
+
+<a name="SecureConnSample"></a>
+<H3>Sample Code Illustrating a Secure Socket Connection
+Between a Client and a Server</H3>
+
+<blockquote>
+
+<P> The sample programs in the directory
+<code>&lt;ExtractDir&gt;/samples/sockets</code> illustrate how to set
+up a secure socket connection between a client and a server.
+
+<P> When running the sample client programs, you can communicate
+with an existing server, such as a commercial Web
+server, or you can communicate with the sample server program,
+<code>ClassFileServer</code>. You can run the sample client
+and the sample server programs on different machines connected
+to the same network, or you can run them both on one
+machine but from different terminal windows.
+
+<P> All the sample <code>SSLSocketClient</code>* programs (and
+URLReader* programs described in <a href="#HTTPSSample">Sample Code
+Illustrating HTTPS Connections</a>) can be run with the
+<code>ClassFileServer</code> sample server program. An example of how
+to do this is shown in <a href="#SSCWCAnCFS">Running
+<code>SSLSocketClientWithClientAuth</code> with
+<code>ClassFileServer</code></a>.  You can make similar changes in
+order to run <code>URLReader</code>, <code>SSLSocketClient</code> or
+<code>SSLSocketClientWithTunneling</code> with
+<code>ClassFileServer</code>.
+
+<P> On some slower machines or in environments with slow network
+connections, it may take a while to establish a connection.  The client
+programs, when not communicating with <code>ClassFileServer</code>,
+attempt to access the file
+<code>http://www.verisign.com/index.html</code>.  In the past, attempts
+to access this file would timeout.  The reason is that a socket would
+be opened to <code>www.verisign.com</code>, then the JSSE would begin
+calculating random number information it would need for the SSL
+negotiations.  <code>www.verisign.com</code> would see that there was
+no traffic for a while, and therefore would close the connection.
+
+<P> At the present time, this is no longer happening.  If it begins to
+happen again, you could connect to other SSL servers, such as
+<code>www.sun.com</code>.  An example of making such a change is shown
+in <a href="#SSCWT">Running
+<code>SSLSocketClientWithTunneling</code></a>.
+
+<P> (Note: There are a couple possible workarounds to a timeout
+problem.  One is to preseed the random number generator. The other is
+to specify an alternate random number generator to the
+<code>SSLContext</code> object.)
+
+<P> If an authentication error occurs while attempting to send messages
+between the client and the server (whether using a web server or
+<code>ClassFileServer</code>), it is most likely because the necessary
+keys are not in the <a href="#Stores">truststore</a> (trust key
+database).  For example, the <code>ClassFileServer</code> uses a
+keystore called "testkeys" containing the private key for "duke" as
+needed during the SSL handshake.  ("testkeys" is included in the same
+directory as the <code>ClassFileServer</code> source.) If the client
+cannot find a certificate for the corresponding public key of "duke" in
+the truststore it consults, an authentication error will occur. Be sure
+to use the <code>samplecacerts</code> truststore (which contains
+"duke"s public key), as described in the next section.
+
+
+<a name="SampleConfig"></a>
+<H3>Configuration Requirements</H3>
+
+<P> When running the sample programs that create a secure socket
+connection between a client and a server, you will need to make the
+appropriate certificates file (truststore) available. For both the
+client and the server programs, you should use the certificates file
+<code>samplecacerts</code>, located in the directory
+<code>&lt;ExtractDir&gt;/samples</code>.  Using this certificates file
+will allow the client to authenticate the server.  The file contains
+all the common Certification Authority certificates shipped with J2SDK
+(in the <code>cacerts</code> file), plus a certificate for "duke"
+needed by the client to authenticate "duke" when communicating with the
+sample server <code>ClassFileServer</code>.
+(<code>ClassFileServer</code> uses a keystore containing the private
+key for "duke" which corresponds to the public key in
+<code>samplecacerts</code>. )
+
+<P> To make the <code>samplecacerts</code> file available to both the client
+and the server, you can either copy it to the file
+<code>&lt;java-home&gt;/lib/security/jssecacerts</code>,
+rename it cacerts and use it to replace the
+<code>&lt;java-home&gt;/lib/security/cacerts</code> file,
+or add the following
+option to the command line when running the <code>java</code> command
+for both the client and the server:
+
+<pre>
+-Djavax.net.ssl.trustStore=path_to_samplecacerts_file
+</pre>
+
+<P> The password for the <code>samplecacerts</code> truststore
+is <code>changeit</code>. You can substitute your own certificates
+in the samples, using keytool.
+
+<P> If you use a browser, such as Netscape Navigator or Microsoft's
+Internet Explorer, to access the sample SSL server provided in the
+<code>ClassFileServer</code> example, a dialog box may pop up with the
+message that it does not recognize the certificate. This is normal
+because the certificate used with the sample programs is self-signed
+and is for testing only. You can accept the certificate for the current
+session. After testing the SSL server, you should exit the browser,
+which deletes the test certificate from the browser's namespace.
+
+<blockquote>
+<P> Note: The "duke" certificate in the <code>samples</code> directory is
+different from the "duke" certificate available from the
+security example provided on
+<code>http://java.sun.com/security/signExample12/</code>.
+If you have both "duke"
+certificates installed, the sample code will not work properly.
+To view the certificates available in your certificate
+file, use the keytool command.
+
+</blockquote>
+
+<a name="SSC"></a>
+<H3>Running <code>SSLSocketClient</code></H3>
+
+<blockquote>
+
+<P> This example demonstrates how to create a client to use an
+<code>SSLSocket</code> to send an HTTP request and to get a response
+from an HTTPS server. The output of this program is the
+HTML source for <code>http://www.verisign.com/index.html</code>.
+
+<P> You must not be behind a firewall to run this program as shipped.
+If you run it from behind a firewall, you will get an
+<code>UnknownHostException</code> because JSSE can't find a path through
+your firewall to <code>www.verisign.com</code>.  To create an
+equivalent client that can run from behind a firewall, set up proxy
+tunneling as illustrated in the sample program
+<code>SSLSocketClientWithTunneling</code>.
+
+</blockquote>
+
+
+<a name="SSCWT"></a>
+<H3>Running <code>SSLSocketClientWithTunneling</code></H3>
+
+<blockquote>
+
+<P> This example illustrates how to do proxy tunneling to access
+a secure web server from behind a firewall. To run this program,
+you must set the following Java system properties to
+the appropriate values:
+
+<blockquote>
+<pre>
+https.proxyHost = &lt;secure proxy server hostname&gt;
+
+https.proxyPort = &lt;secure proxy server port&gt;
+</pre>
+</blockquote>
+
+<P> If you run this program and experience a time-out problem,
+try changing the application
+to access Sun instead of VeriSign. To make this
+change, do the following:
+
+<ol>
+
+<li>In a text editor, open the file
+<code>SSLSocketClientWithTunneling.java</code>.<P>
+
+<li>Replace all occurrences of <code>verisign</code> with
+<code>sun</code>.<P>
+
+<li>Recompile <code>SSLSocketClientWithTunneling.java</code>.<P>
+
+<li>Run <code>SSLSocketClientWithTunneling</code> with the following
+command (all on one line):
+
+<blockquote>
+<pre>
+java -Dhttps.proxyHost=webproxy
+    -Dhttps.proxyPort=ProxyPortNumber
+    SSLSocketClientWithTunneling
+</pre>
+</blockquote>
+
+<P> Note: Be sure to replace <code>webproxy</code> with the name of your
+proxy host and <code>ProxyPortNumber</code> with the appropriate
+port number.
+
+</ol>
+
+<P> The program will return the HTML source file from
+<code>http://www.sun.com/index.html</code>.
+
+</blockquote>
+
+
+<a name="SSCWCA"></a>
+<H3>Running <code>SSLSocketClientWithClientAuth</code></H3>
+
+<blockquote>
+
+<P> This example shows how to set up a key manager to do client
+authentication if required by a server. This program also assumes
+that the client is not outside a firewall. You can modify the
+program to connect from inside a firewall by following the
+example in <code>SSLSocketClientWithTunneling</code>.
+
+<P> To run this program, you must specify three parameters:
+host, port, and requested file path. To mirror the previous
+examples, you can run this program without client authentication
+by setting the host to <code>www.verisign.com</code>, the port
+to <code>443</code>, and the requested file path to
+<code>http://www.verisign.com/index.html</code>. The output when using these
+parameters is the HTML for the Web site
+<code>http://www.verisign.com/index.html</code>.
+
+<P> To run <code>SSLSocketClientWithClientAuth</code> to do client
+authentication, you must access a server that requests client
+authentication. You can use the sample program
+<code>ClassFileServer</code> as this server. This is described in the
+following section.
+
+</blockquote>
+
+<a name="SSCWCAnCFS"></a>
+
+<H3>Running <code>SSLSocketClientWithClientAuth</code> With
+<code>ClassFileServer</code></H3>
+
+<blockquote>
+
+<P> You can use the sample programs
+<code>SSLSocketClientWithClientAuth</code> and
+<code>ClassFileServer</code> to set up authenticated communication,
+where the client and server are authenticated to each other. You can
+run both sample programs on different machines connected to the same
+network, or you can run them both on one machine but from different
+terminal windows or command prompt windows. To set up both the client
+and the server, do the following:
+
+<ol>
+
+<li>Run the program <code>ClassFileServer</code> from one machine
+or terminal window. <code>ClassFileServer</code> requires the
+following parameters:
+<P>
+
+<ul>
+
+<li><code>port</code> - The port parameter can be any available
+unused port number, for example, you can use the
+number 2001.
+<P>
+
+<li><code>docroot</code> - This parameter indicates the directory
+on the server that contains the file you wish to retrieve. For example,
+on Solaris, you can use <code>/home/userid/</code>
+on Windows, you can use <code>c:\</code>.
+<P>
+
+<li><code>TLS</code> - This is an optional parameter. When used, it
+indicates that the server is to use SSL or TLS.
+<P>
+
+<li><code>true</code> - This is an optional parameter. When used,
+client authentication is required. This parameter is
+only consulted if the TLS parameter is set.
+
+</ul>
+
+<P> Note 1: The <code>TLS</code> and <code>true</code> parameters are optional.
+If you leave them off, indicating that just an ordinary (not TLS) file server
+should be used, without authentication, nothing happens.
+This is because one side (the client) is trying to negotiate
+with TLS, while the other (the server) isn't, so they can't
+communicate.
+
+<P> Note 2: The server expects GET requests in the form
+"GET /...", where "..." is the path to the file.<P>
+
+<li>Run the program <code>SSLSocketClientWithClientAuth</code> on
+another machine or terminal window.
+<code>SSLSocketClientWithClientAuth</code> requires the following
+parameters:  <P>
+
+<ul>
+
+<li><code>host</code> - This is the hostname of the machine you are
+using to run <code>ClassFileServer</code>.
+<P>
+
+<li><code>port</code> - This is the same port you specified for
+<code>ClassFileServer</code>.
+<P>
+
+<li><code>requestedfilepath</code> - This parameter indicates
+the path to the file you want to retrieve from the
+server. You must give this parameter as <code>/filepath</code>.
+Forward slashes are required in the file path because it is used as
+part of a GET statement, which requires forward slashes
+regardless of what type of operating system you are running.
+The statement is formed as
+
+<blockquote>
+<pre>
+"GET " + requestedfilepath + " HTTP/1.1"
+</pre>
+</blockquote>
+
+</ul>
+
+</ol>
+
+</blockquote>
+
+NOTE: you can modify the other SSLClient* application's "GET" commands
+to connect to a local machine running <code>ClassFileServer</code>.
+
+</blockquote>
+
+
+<a name="HTTPSSample"></a>
+<H3>Sample Code Illustrating HTTPS Connections</H3>
+
+<blockquote>
+
+<P> There are two primary APIs for accessing secure communications
+through JSSE. One way is through a socket-level API which can be used for
+arbitrary secure communications, as illustrated by the
+<code>SSLSocketClient</code>, <code>SSLSocketClientWithTunneling</code>, and
+<code>SSLSocketClientWithClientAuth</code> (with and without
+<code>ClassFileServer</code>) sample programs.
+
+<P> A second, and often simpler way, is through the standard Java URL API.
+You can communicate securely with an SSL-enabled web server by using
+the "https" URL protocol or scheme using the <code>java.net.URL</code> class.
+
+<p>Support for "https" URL schemes is implemented in many of the
+common browsers, which allows access to secured communications without
+requiring the socket-level API provided with JSSE.
+
+<p>An example URL might be:
+
+<blockquote>
+<i>"https://www.sun.com"</i>
+</blockquote>
+
+<p>The trust and key management for the "https" URL implementation is
+environment-specific.
+
+<P> The JSSE reference implementation provides an "https"
+URLStreamHandler implementation. In order to use this handler, you must
+add the handler's implementation package name to the list of packages
+which are searched by the Java URL class. This is configured via the
+<code>java.protocol.handler.pkgs</code> system property.  See the
+<code>java.net.URL</code> class documentation for details.  System
+properties can be set via the command line or at runtime through the
+<code>java.lang.System</code> class.  Here is an example of the option
+you would give to the <code>java</code> command on the command line to
+indicate the JSSE reference implementation's "https" URLStreamHandler:
+
+<pre>
+-Djava.protocol.handler.pkgs=com.sun.net.ssl.internal.www.protocol
+</pre>
+
+
+<P> The samples that you can download with JSSE 1.0.3 include
+two sample programs that illustrate how to create
+an HTTPS connection. Both of these sample programs are in
+the directory <code>&lt;ExtractDir&gt;/samples/urls</code>.
+
+
+<a name="URLReader"></a>
+<H3>Running URLReader</H3>
+
+<blockquote>
+
+<P> This program illustrates using the URL class to access a
+secure site. The output of this program is the HTML source
+for <code>http://www.verisign.com/</code>.
+
+<P> To run this code, you must specify an implementation of the
+HTTPS protocol by setting the system property
+<code>java.protocol.handler.pkgs</code>.
+Set it as described above to use Sun's reference implementation.
+
+<P> If you are running the sample code behind a firewall, you
+must also set the system properties <code>https.proxyHost</code> and
+<code>https.proxyPort</code>. For example, to use the proxy host
+"webproxy" on port 8080, you can use the following options
+to the <code>java</code> command:
+
+<pre>
+-Dhttps.proxyHost=webproxy
+
+-Dhttps.proxyPort=8080
+</pre>
+
+<P> Alternatively, you can set the system properties within the
+source code with the <code>java.lang.System</code> method
+<code>setProperty</code>. For example, instead of using the command line
+options, you can include the following
+lines in your program:
+
+<blockquote>
+<pre>
+System.setProperty("java.protocol.handler.pkgs",
+    "com.sun.net.ssl.internal.www.protocol");
+
+System.setProperty("https.proxyHost",
+    "webproxy");
+
+System.setProperty("https.proxyPort",
+    "8080");
+</pre>
+</blockquote>
+
+<P> Note: When running on Windows 95 or Windows 98, the
+maximum number of characters allowed in an MS-DOS
+prompt may not be enough to include all the command-line
+options. If you encounter this problem, either create a
+.bat file with the entire command or add the system
+properties to the source code and recompile the source
+code.
+
+</blockquote>
+
+
+<a name="URLReaderWO"></a>
+<H3>Running URLReaderWithOptions</H3>
+
+<blockquote>
+
+<P> This program is essentially the same as URLReader, except
+that it allows you to optionally input any or all of the following
+system properties as arguments to the program when you
+run it:
+<P>
+
+<ul>
+
+<li>java.protocol.handler.pkgs
+<P>
+
+<li>https.proxyHost
+<P>
+
+<li>https.proxyPort
+<P>
+
+<li>https.cipherSuites
+
+</ul>
+
+<P> To run URLReaderWithOptions, type the following command
+(all on one line):
+
+<blockquote>
+<pre>
+java URLReaderWithOptions
+     [-h proxyhost -p proxyport]
+     [-k protocolhandlerpkgs]
+     [-c ciphersarray]
+     myApp
+</pre>
+</blockquote>
+
+<P> Note: Multiple protocol handlers can be included in the
+<code>protocolhandlerpkgs</code> in a list
+with items separated by vertical bars. Multiple SSL cipher
+suite names can be included in the <code>ciphersarray</code> in
+a list with items separated by
+commas. The possible cipher suite names are the same as those
+returned by the call <code>SSLSocket.getSupportedCipherSuites()</code>.
+The suite names are taken from the SSL and TLS protocol specifications.
+
+<P> You must include the argument for
+<code>java.protocol.handler.pkgs</code>.
+To run the program <code>classfile</code> with this argument
+only, using Sun's reference implementation of the HTTPS
+protocol, type the following command (all on one line):
+
+<blockquote>
+<pre>
+java URLReaderWithOptions
+    -k com.sun.net.ssl.internal.www.protocol classfile
+</pre>
+</blockquote>
+
+<P> If you are running behind a firewall, you must also include
+arguments for the proxy host and the proxy port. Additionally,
+you can include a list of cipher suites to enable.
+
+</blockquote>
+
+</blockquote>
+
+<a name="RMISample"></a>
+<H3>Sample Code Illustrating a Secure RMI Connection</H3>
+
+<blockquote>
+
+<P> The sample code in the directory
+<code>&lt;ExtractDir&gt;/samples/rmi</code> illustrates how to create a
+secure RMI connection. The sample code is based on the online RMI
+example in <a
+href="http://java.sun.com/j2se/1.3/docs/guide/rmi/installedCsfHowTo.doc.html">
+http://java.sun.com/j2se/1.3/docs/guide/rmi/installedCsfHowTo.doc.html
+</a>.  For more information about how to run this program, please see
+the sample code's README.
+
+<P> For more information about RMI, see the online Java RMI
+documentation at
+<a href="http://java.sun.com/j2se/1.3/docs/guide/rmi/">
+http://java.sun.com/j2se/1.3/docs/guide/rmi/</a>.
+This Web page
+points to RMI tutorials and other information about RMI.
+
+
+<blockquote>
+
+</blockquote>
+
+</blockquote>
+
+</blockquote>
+
+
+</blockquote>
+
+
+
+<HR>
+
+<H1><a name="AppA">Appendix A: Standard Names</a></H1>
+
+<blockquote>
+
+The protocol name parameter field passed to the
+<code>getInstance</code> method of <code>SSLContext</code> supports a
+named secure socket protocol and optionally a named purpose separated
+from the protocol name by a '/' character. The table below lists some
+common standard protocol names.
+
+<blockquote>
+
+<table BORDER WIDTH="80%" >
+<tr>
+<th>Protocol</th>
+
+<th>Comment</th>
+</tr>
+
+<tr>
+<td>SSL</td>
+
+<td>Supports some version of SSL; may support other versions</td>
+</tr>
+
+<tr>
+<td>SSLv2</td>
+
+<td>Supports SSL version 2 or higher</td>
+</tr>
+
+<tr>
+<td>SSLv3</td>
+
+<td>Supports SSL version 3; may support other versions</td>
+</tr>
+
+<tr>
+<td>TLS</td>
+
+<td>Supports some version of TLS; may support other versions</td>
+</tr>
+
+<tr>
+<td>TLSv1</td>
+
+<td>Supports TLS version 1; may support other versions</td>
+</tr>
+</table>
+
+
+</blockquote>
+
+</blockquote>
+
+
+
+</body>
+</html>
+
