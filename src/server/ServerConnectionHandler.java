@@ -37,11 +37,8 @@ public class ServerConnectionHandler implements Runnable {
 			String clientMsg = null;
 			while ((clientMsg = in.readLine()) != null) {
 				System.out.println("received '" + clientMsg + "' from client");
-				handleInput(clientMsg);
-				// System.out.print("sending '" + rev + "' to client...");
-				// out.println(rev);
-				// out.flush();
-				// System.out.println("done\n");
+				 out.println(handleInput(clientMsg));
+				 out.flush();
 			}
 			in.close();
 			out.close();
@@ -60,7 +57,7 @@ public class ServerConnectionHandler implements Runnable {
 		(new Thread(this)).start();
 	} // calls run()
 
-	public static void main(String args[]) {
+	public static void init(String args[]) {
 		System.out.println("\nServer Started\n");
 		int port = 8888;
 		String type = "TLS";
@@ -109,8 +106,8 @@ public class ServerConnectionHandler implements Runnable {
 		return null;
 	}
 
-	private void handleInput(String clientMsg) {
-		// TODO Auto-generated method stub
+	private String handleInput(String clientMsg) {
+		return "you get nothing! hahahahaha";
 
 	}
 }
