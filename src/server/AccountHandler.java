@@ -1,6 +1,5 @@
 package server;
 
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -10,46 +9,80 @@ import javax.crypto.spec.PBEKeySpec;
 
 public class AccountHandler {
 
-	private SecureRandom saltGenerator;
 	public static final int SALT_BYTE_SIZE = 32;
 	public static final int HASH_BYTE_SIZE = 32;
 	public static final int PBKDF2_ITERATIONS = 10000;
-
-	// public boolean validateUserInformation(String user, String ){
-	//
-	//
-	// return false;
-	// }
-
-	// public boolean createNewUser(String user, String password){
-	// return false;
-	//
-	//
-	//
-	// }
-
-	public static void main(String arg[]) {
-		new AccountHandler();
-	}
-
+	
+	private SecureRandom saltGenerator;
+	
 	public AccountHandler() {
 		saltGenerator = new SecureRandom();
-
-		System.out.println(byteToString(hash("password", generateSaltValue())));
-
 	}
+	
+	/**
+	 * 
+	 * @param password
+	 * @param användarinfosomjagförtillfälletskiteri
+	 * @return
+	 */
+	public boolean createNewAccount(String password, String användarinfo){
+		
+		
+		byte[] salt = generateSaltValue();
+		byte[] hash = hash(password, salt);
+		
+		//användarInfo, salt, hash sparas i databas på något sätt
+		
+		return true;
+	}
+	
+	/**
+	 * autentiserar användaren
+	 * @param userId
+	 * @param password
+	 * @return
+	 */
+	public boolean authenticateUser(String userId,String password){
+		
+		byte[] salt= null;
+		byte[] hashStored = null;
+		
+		//med hjälp av userId hämtas salt och hashat lösen från databas
+		
+		//hash räknas ut med hjälp av salt och password
+		byte[] hash = hash(password, salt);
+		
+		//kollar om de e samma
+		if(hash.equals(hashStored)){
+			return true;
+		}
+		return false;
+		
+	}
+	
+	
+	
 
-	// genererar ett nytt salt värde
+	/**
+	 * genererar ett nytt salt värde
+	 * @return
+	 */
 	private byte[] generateSaltValue() {
+		// se http://docs.oracle.com/javase/7/docs/api/java/security/SecureRandom.html
 		byte[] salt = new byte[SALT_BYTE_SIZE];
 		saltGenerator.nextBytes(salt);
 		return salt;
 	}
 
+
 	/**
 	 * använder PBKDF för att hasha fram ett hashvärde mha av saltet och
 	 * lösenordet. se
 	 * https://crackstation.net/hashing-security.htm#javasourcecode för exempel
+	 * Har inte själv full koll på det riktigt
+	 * @param password
+	 * @param salt
+	 * @return
 	 */
 	private byte[] hash(String password, byte[] salt) {
 
@@ -68,6 +101,11 @@ public class AccountHandler {
 		return null;
 	}
 
+	/**
+	 * konverterar en byte array till en String
+	 * @param array
+	 * @return
+	 */
 	private String byteToString(byte[] array) {
 		
 		StringBuilder sb = new StringBuilder();
