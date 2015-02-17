@@ -6,39 +6,50 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowListener;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import javax.net.ssl.SSLSocket;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class ClientGUI extends JFrame implements ActionListener {
+import com.sun.glass.events.WindowEvent;
+
+public class ClientGUI extends JFrame implements ActionListener, WindowListener {
 	private JPanel panel;
-	private JLabel output;
+	private JTextField output;
 	private JTextField input;
 	private JButton send;
 	private PrintWriter out;
 	private BufferedReader in;
+	private ClientConnectionHandler connection;
+	private BufferedReader read;
+	private SSLSocket socket;
 
-	public ClientGUI (ClientConnectionHandler connection, BufferedReader read, PrintWriter out, BufferedReader in)  {
+	public ClientGUI (ClientConnectionHandler connection, BufferedReader read, PrintWriter out, BufferedReader in, SSLSocket socket)  {
 		
 		this.out = out;
 		this.in = in;
+		this.read = read;
+		this.connection = connection;
+		this.socket = socket;
 		
-		panel = new JPanel();
-		panel.setPreferredSize(new Dimension(400,400));
-		
+		panel = new JPanel(new GridBagLayout());
+		panel.setSize(new Dimension(400,400));
 
-		output = new JLabel("Response: ");
-		output.setPreferredSize(new Dimension(200,40));
+		output = new JTextField("Response: ");
+		output.setPreferredSize(new Dimension(300,40));
+		output.setEditable(false);
 		input = new JTextField("");
 		input.setPreferredSize(new Dimension(200,40));
 		send = new JButton("Send");
-		send.setPreferredSize(new Dimension(80,80));
+		send.setPreferredSize(new Dimension(80,40));
 
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.HORIZONTAL;
@@ -55,24 +66,79 @@ public class ClientGUI extends JFrame implements ActionListener {
 
 		panel.setVisible(true);
 		send.addActionListener(this);
-		setPreferredSize(new Dimension(400,400));
+		setSize(new Dimension(400,150));
+		
+		addWindowListener(this);
+     
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		
-		// first send our message
-		System.out.println(out);
-		out.println(input.getText());
-		out.flush();
-		
-		// then wait for response
+		if (arg0.getSource() == send){
+			// first send our message
+			System.out.println(out);
+			out.println(input.getText());
+			out.flush();
+			
+			// then wait for response
+			try {
+				output.setText("Response: " +in.readLine());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+	}
+	
+	private void disconnect() {
 		try {
-			output.setText("Response: " +in.readLine());
+			in.close();
+			out.close();
+			read.close();
+			socket.close();
+			System.exit(0);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+	}
+
+	@Override
+	public void windowActivated(java.awt.event.WindowEvent arg0) {
+		
+	}
+
+	@Override
+	public void windowClosed(java.awt.event.WindowEvent arg0) {
+		
+	}
+
+	@Override
+	public void windowClosing(java.awt.event.WindowEvent arg0) {
+		disconnect();
+		
+	}
+
+	@Override
+	public void windowDeactivated(java.awt.event.WindowEvent arg0) {
+		
+	}
+
+	@Override
+	public void windowDeiconified(java.awt.event.WindowEvent arg0) {
+		
+	}
+
+	@Override
+	public void windowIconified(java.awt.event.WindowEvent arg0) {
+		
+	}
+
+	@Override
+	public void windowOpened(java.awt.event.WindowEvent arg0) {
 		
 	}
 
