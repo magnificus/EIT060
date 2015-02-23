@@ -1,4 +1,4 @@
-package databas;
+package database;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -20,7 +20,6 @@ public class Database {
 	private final int NURSE_CLEAR = 2;
 	private final int DOCTOR_CLEAR = 3;
 	private final int PAT_CLEAR = 1;
-	
 
 	/**
 	 * Create the database interface object. Connection to the database is
@@ -29,7 +28,22 @@ public class Database {
 	public Database() {
 		conn = null;
 		scan = new Scanner(System.in);
+		init();
 	}
+
+	private void init() {
+		Scanner scan = new Scanner(System.in);
+		if (openConnection("db51", "marcus")) {
+			System.out.println("connected");
+		}
+//		while (true) {
+//			String s = scan.next();
+//			System.out.println(Command(s, "0123456789"));
+//
+//		}
+
+	}
+	
 
 	/**
 	 * Open a connection to the database, using the specified user name and
@@ -50,9 +64,10 @@ public class Database {
 			conn = DriverManager.getConnection(
 					"jdbc:mysql://puccini.cs.lth.se/" + userName, userName,
 					password);
-//			 String url = "jdbc:MySql://localhost:3306/databaseName";
-//			 conn = DriverManager.getConnection("jdbc:MySql://localhost:3306/Datasakerhet","root","");
-			
+			// String url = "jdbc:MySql://localhost:3306/databaseName";
+			// conn =
+			// DriverManager.getConnection("jdbc:MySql://localhost:3306/Datasakerhet","root","");
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -69,7 +84,7 @@ public class Database {
 	public void closeConnection() {
 		try {
 			if (conn != null) {
-				 conn.close();
+				conn.close();
 			}
 		} catch (SQLException e) {
 		}
@@ -84,126 +99,124 @@ public class Database {
 	public boolean isConnected() {
 		return conn != null;
 	}
-	
-	public String Command(String command, String userId){
-		if(command.contains("delete") && getClearance(userId) == GOV_CLEAR){
+
+	public String Command(String command, String userId) {
+		if (command.contains("delete") && getClearance(userId) == GOV_CLEAR) {
 			return deleteFile(userId);
-		}else if(command.contains("read")){
-			
+		} else if (command.contains("read")) {
+
 			return readFile(userId);
-			
-		}else if(command.contains("write") && getClearance(userId) > PAT_CLEAR && getClearance(userId) < GOV_CLEAR){
+
+		} else if (command.contains("write")
+				&& getClearance(userId) > PAT_CLEAR
+				&& getClearance(userId) < GOV_CLEAR) {
 			return writeFile(userId);
-			
-		}else if(command.contains("create") && getClearance(userId) == DOCTOR_CLEAR){
+
+		} else if (command.contains("create")
+				&& getClearance(userId) == DOCTOR_CLEAR) {
 			return createFile(userId);
-		}else{
+		} else {
 			return "invalid command or you don't have clearance";
 		}
-		
-		
+
 	}
-	private String readFile(String userId){
+
+	private String readFile(String userId) {
 		System.out.println("File Name:");
 		String filename = scan.next();
 		boolean clear = false;
-		if(getClearance(userId)<GOV_CLEAR){
+		if (getClearance(userId) < GOV_CLEAR) {
 			String group = getGroup(userId);
 			try {
 				String sql = "select name from journals where doc_pNbr  = ? or nurse_pNbr = ? or patient_pNbr = ? or jor_groupName = ? ";
 				stmt = conn.prepareStatement(sql);
-			
+
 				stmt.setString(1, userId);
 				stmt.setString(2, userId);
-				stmt.setString(3, userId);				
+				stmt.setString(3, userId);
 				stmt.setString(4, group);
 				ResultSet rsa = stmt.executeQuery();
 				ArrayList<String> list = new ArrayList<String>();
-			
+
 				while (rsa.next()) {
-				
+
 					list.add(rsa.getString(1));
-					
-					
+
 				}
 				System.out.println(list);
-				if(list.contains(filename)){
+				if (list.contains(filename)) {
 					clear = true;
-				}else{
+				} else {
 					return "filen finns ej eller så har du ej clearance";
 				}
-				 
 
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}else{
-				clear = true;
-			}
-			if(clear){
-				String file= "";
-				try {
-					String sql = "select text from journals where name = ?";
-					stmt = conn.prepareStatement(sql);
-					stmt.setString(1, filename);
-					rs = stmt.executeQuery();
-					
-					while (rs.next()) {
-						file = rs.getString(1);
-						
-					}
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+		} else {
+			clear = true;
+		}
+		if (clear) {
+			String file = "";
+			try {
+				String sql = "select text from journals where name = ?";
+				stmt = conn.prepareStatement(sql);
+				stmt.setString(1, filename);
+				rs = stmt.executeQuery();
+
+				while (rs.next()) {
+					file = rs.getString(1);
+
 				}
-				return file;
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		
+			return file;
+		}
+
 		return "Något blev fel";
 	}
-	
-	
-	private String writeFile(String userId){
+
+	private String writeFile(String userId) {
 		System.out.println("File Name:");
 		String filename = scan.next();
 		System.out.println("Text:");
 		String text = scan.next();
 		text = text + scan.nextLine();
-		
+
 		boolean clear = false;
 		try {
 			String sql = "select name from journals where doc_pNbr  = ? or nurse_pNbr = ?  ";
 			stmt = conn.prepareStatement(sql);
-		
+
 			stmt.setString(1, userId);
 			stmt.setString(2, userId);
-			
+
 			ResultSet rsa = stmt.executeQuery();
 			ArrayList<String> list = new ArrayList<String>();
-		
+
 			while (rsa.next()) {
-			
+
 				list.add(rsa.getString(1));
-				
-				
+
 			}
 			System.out.println(list);
-			if(list.contains(filename)){
+			if (list.contains(filename)) {
 				clear = true;
-			}else{
+			} else {
 				return "filen finns ej eller så har du ej clearance";
 			}
-			 
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
-		if(clear){
-			
-			String s =  text;
+
+		if (clear) {
+
+			String s = text;
 			System.out.println(s);
 			try {
 				String sql = "update journals set text = ? where name = ?;";
@@ -211,8 +224,7 @@ public class Database {
 				stmt.setString(1, s);
 				stmt.setString(2, filename);
 				stmt.executeUpdate();
-				
-				
+
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -220,9 +232,10 @@ public class Database {
 			return "uppdate succsesfull";
 		}
 		return "fuck något blev fel";
-	
+
 	}
-	private String createFile(String userId){
+
+	private String createFile(String userId) {
 		System.out.println("File name:");
 		String fileName = scan.next();
 		System.out.println("nurse Pnbr:");
@@ -245,20 +258,20 @@ public class Database {
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			
+
 			e.printStackTrace();
 		}
-		
-		
+
 		return "filen är skapad";
 	}
-	private String deleteFile(String userId){
+
+	private String deleteFile(String userId) {
 		System.out.println("File name:");
 		String fileName = scan.next();
 		return null;
 	}
-	
-	public boolean dbContainsFile(String filename){
+
+	public boolean dbContainsFile(String filename) {
 		try {
 			String sql = "select name from jornals where name = ? ";
 			stmt = conn.prepareStatement(sql);
@@ -267,13 +280,12 @@ public class Database {
 			String s = "";
 			while (rs.next()) {
 				s = rs.getString(1);
-				
+
 			}
-			if(s==filename){
-				
+			if (s == filename) {
+
 				return true;
 			}
-			
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -281,13 +293,12 @@ public class Database {
 		}
 		return false;
 	}
-	
-	
-	private boolean logIn(String user, String password){
+
+	private boolean logIn(String user, String password) {
 		return false;
 	}
 
-	public int getClearance(String userId){
+	public int getClearance(String userId) {
 		int i = -1;
 		try {
 			String sql = "select clearance from user where pNbr = ?";
@@ -296,9 +307,8 @@ public class Database {
 			rs = stmt.executeQuery();
 			while (rs.next()) {
 				i = rs.getInt(1);
-				
+
 			}
-			 
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -306,7 +316,8 @@ public class Database {
 		}
 		return i;
 	}
-	public String getGroup(String userId){
+
+	public String getGroup(String userId) {
 		String s = "";
 		try {
 			String sql = "select groupName from user where pNbr =?";
@@ -315,11 +326,9 @@ public class Database {
 			rs = stmt.executeQuery();
 			while (rs.next()) {
 				s = rs.getString(1);
-				System.out.println(s+" hej");
-				
-				
+				System.out.println(s + " hej");
+
 			}
-			 
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -327,10 +336,9 @@ public class Database {
 		}
 		return s;
 	}
-	private void log(String log){
-		
+
+	private void log(String log) {
+
 	}
-	
-	
-	
+
 }
