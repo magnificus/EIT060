@@ -32,15 +32,9 @@ public class Database {
 	}
 
 	private void init() {
-		Scanner scan = new Scanner(System.in);
 		if (openConnection("db51", "marcus")) {
 			System.out.println("connected");
 		}
-//		while (true) {
-//			String s = scan.next();
-//			System.out.println(Command(s, "0123456789"));
-//
-//		}
 
 	}
 	
@@ -57,7 +51,7 @@ public class Database {
 	 *         and password were not recognized. Returns false also if the JDBC
 	 *         driver isn't found.
 	 */
-	public boolean openConnection(String userName, String password) {
+	private boolean openConnection(String userName, String password) {
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -81,7 +75,7 @@ public class Database {
 	/**
 	 * Close the connection to the database.
 	 */
-	public void closeConnection() {
+	private void closeConnection() {
 		try {
 			if (conn != null) {
 				conn.close();
@@ -143,7 +137,6 @@ public class Database {
 					list.add(rsa.getString(1));
 
 				}
-				System.out.println(list);
 				if (list.contains(filename)) {
 					clear = true;
 				} else {
@@ -202,7 +195,6 @@ public class Database {
 				list.add(rsa.getString(1));
 
 			}
-			System.out.println(list);
 			if (list.contains(filename)) {
 				clear = true;
 			} else {
@@ -217,7 +209,6 @@ public class Database {
 		if (clear) {
 
 			String s = text;
-			System.out.println(s);
 			try {
 				String sql = "update journals set text = ? where name = ?;";
 				stmt = conn.prepareStatement(sql);
@@ -229,7 +220,7 @@ public class Database {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return "uppdate succsesfull";
+			return "uppdate successfull";
 		}
 		return "fuck något blev fel";
 
@@ -326,7 +317,6 @@ public class Database {
 			rs = stmt.executeQuery();
 			while (rs.next()) {
 				s = rs.getString(1);
-				System.out.println(s + " hej");
 
 			}
 
