@@ -37,7 +37,6 @@ public class Database {
 		}
 
 	}
-	
 
 	/**
 	 * Open a connection to the database, using the specified user name and
@@ -95,29 +94,31 @@ public class Database {
 	}
 
 	public String Command(String command, String userId) {
-		if (command.contains("delete") && getClearance(userId) == GOV_CLEAR) {
-			return deleteFile(userId);
-		} else if (command.contains("read")) {
 
-			return readFile(userId);
+		String[] commands = command.split(":");
 
-		} else if (command.contains("write")
+		if (commands[0].equals("delete") && getClearance(userId) == GOV_CLEAR) {
+			return deleteFile(userId, commands);
+		} else if (commands[0].equals("read")) {
+			return readFile(userId, commands);
+		} else if (commands[0].equals("write")
 				&& getClearance(userId) > PAT_CLEAR
 				&& getClearance(userId) < GOV_CLEAR) {
-			return writeFile(userId);
 
-		} else if (command.contains("create")
+			return writeFile(userId, commands);
+
+		} else if (commands[0].equals("create")
 				&& getClearance(userId) == DOCTOR_CLEAR) {
-			return createFile(userId);
+			return createFile(userId, commands);
 		} else {
 			return "invalid command or you don't have clearance";
 		}
 
 	}
 
-	private String readFile(String userId) {
-		System.out.println("File Name:");
-		String filename = scan.next();
+	private String readFile(String userId, String[] commands) {
+
+		String filename = commands[1];
 		boolean clear = false;
 		if (getClearance(userId) < GOV_CLEAR) {
 			String group = getGroup(userId);
@@ -172,12 +173,9 @@ public class Database {
 		return "Något blev fel";
 	}
 
-	private String writeFile(String userId) {
-		System.out.println("File Name:");
-		String filename = scan.next();
-		System.out.println("Text:");
-		String text = scan.next();
-		text = text + scan.nextLine();
+	private String writeFile(String userId, String[] commands) {
+		String filename = commands[1];
+		String text = commands[2];
 
 		boolean clear = false;
 		try {
@@ -226,15 +224,11 @@ public class Database {
 
 	}
 
-	private String createFile(String userId) {
-		System.out.println("File name:");
-		String fileName = scan.next();
-		System.out.println("nurse Pnbr:");
-		String nurse = scan.next();
-		System.out.println("Patient Pnbr:");
-		String patient = scan.next();
-		System.out.println("text:");
-		String text = scan.next() + scan.nextLine();
+	private String createFile(String userId, String[] commands) {
+		String fileName = commands[1];
+		String nurse = commands[2];
+		String patient = commands[3];
+		String text = commands[4];
 		String group = getGroup(userId);
 		try {
 			String sql = "insert into journals values(?,?,?,?,?,?)";
@@ -256,20 +250,19 @@ public class Database {
 		return "filen är skapad";
 	}
 
-	private String deleteFile(String userId) {
-		System.out.println("File name:");
-		String fileName = scan.next();
-		if(dbContainsFile(fileName)){
-		try {
-		String sql = "delete from journals journals where name = ? ";
-		stmt = conn.prepareStatement(sql);
-		stmt.setString(1, fileName);
-		int i = stmt.executeUpdate();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return fileName + " har tagits bort";
+	private String deleteFile(String userId, String[] commands) {
+		String fileName = commands[1];
+		if (dbContainsFile(fileName)) {
+			try {
+				String sql = "delete from journals journals where name = ? ";
+				stmt = conn.prepareStatement(sql);
+				stmt.setString(1, fileName);
+				int i = stmt.executeUpdate();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return fileName + " har tagits bort";
 		}
 		return "Filen finns ej";
 	}
@@ -296,8 +289,6 @@ public class Database {
 		}
 		return false;
 	}
-
-	
 
 	public int getClearance(String userId) {
 		int i = -1;

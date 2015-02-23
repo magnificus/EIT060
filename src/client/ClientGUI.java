@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -44,7 +45,7 @@ public class ClientGUI extends JFrame implements ActionListener,
 		this.socket = socket;
 
 		panel = new JPanel(new GridBagLayout());
-		panel.setSize(new Dimension(400, 400));
+		panel.setPreferredSize(new Dimension(400, 400));
 
 		output = new JTextField("Response: ");
 		output.setPreferredSize(new Dimension(300, 40));
@@ -116,43 +117,28 @@ public class ClientGUI extends JFrame implements ActionListener,
 
 	}
 
-	@Override
-	public void windowActivated(java.awt.event.WindowEvent arg0) {
 
-	}
-
-	@Override
-	public void windowClosed(java.awt.event.WindowEvent arg0) {
-
-	}
-
-	@Override
 	public void windowClosing(java.awt.event.WindowEvent arg0) {
 		disconnect();
 
 	}
 
-	@Override
 	public void windowDeactivated(java.awt.event.WindowEvent arg0) {
 
 	}
 
-	@Override
 	public void windowDeiconified(java.awt.event.WindowEvent arg0) {
 
 	}
 
-	@Override
 	public void windowIconified(java.awt.event.WindowEvent arg0) {
 
 	}
 
-	@Override
 	public void windowOpened(java.awt.event.WindowEvent arg0) {
 
 	}
 
-	@Override
 	public void keyPressed(KeyEvent arg0) {
 		if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
 			sendAndWaitForResponse();
@@ -160,16 +146,24 @@ public class ClientGUI extends JFrame implements ActionListener,
 
 	}
 
-	@Override
 	public void keyReleased(KeyEvent arg0) {
 		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void keyTyped(KeyEvent arg0) {
 		// TODO Auto-generated method stub
 
+	}
+
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void windowClosed(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
