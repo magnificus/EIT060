@@ -5,6 +5,11 @@ import java.nio.channels.SocketChannel;
 import java.security.*;
 
 public class ServerMain {
+	
+	
+	public static void main(String[] args){
+		init();
+	}
 
 	public static void init() {
 		printOutInterestingInfo();
