@@ -5,6 +5,7 @@ import java.io.*;
 
 import javax.net.ssl.*;
 import javax.security.cert.X509Certificate;
+import javax.swing.JOptionPane;
 
 import java.security.KeyStore;
 import java.security.cert.*;
@@ -22,11 +23,14 @@ public class ClientConnectionHandler {
 	public void init() throws Exception {
 		String host = "localhost";
 		int port = 8888;
+		ClientGUI gui = new ClientGUI();
 
 		try { /* set up a key manager for client authentication */
 			SSLSocketFactory factory = null;
 			try {
-				char[] password = "password".toCharArray();
+				char[] password = gui.getPassword().toCharArray();
+				
+				
 				KeyStore ks = KeyStore.getInstance("JKS");
 				KeyStore ts = KeyStore.getInstance("JKS");
 				KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
@@ -42,8 +46,9 @@ public class ClientConnectionHandler {
 				tmf.init(ts); // keystore can be used as truststore here
 				ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
 				factory = ctx.getSocketFactory();
-			} catch (Exception e) {
-				throw new IOException(e.getMessage());
+			} catch (IOException e) {
+				JOptionPane.showMessageDialog(null, "Wrong password!");
+				System.exit(0);
 			}
 			SSLSocket socket = (SSLSocket) factory.createSocket(host, port);
 			System.out.println("\nsocket before handshake:\n" + socket + "\n");
@@ -66,12 +71,17 @@ public class ClientConnectionHandler {
 			BufferedReader read = new BufferedReader(new InputStreamReader(System.in));
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 			BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			ClientGUI gui = new ClientGUI(this, read, out, in, socket);
+			gui.openConsole(read, out, in, socket);
 
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private String getPassword() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	public void send(String text) {

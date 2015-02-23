@@ -37,7 +37,7 @@ public class ServerConnectionHandler implements Runnable {
 			String clientMsg = null;
 			while ((clientMsg = in.readLine()) != null) {
 				System.out.println("received '" + clientMsg + "' from client");
-				 out.println(handleInput(clientMsg));
+				 out.println(handleInput(clientMsg, subject));
 				 out.flush();
 			}
 			in.close();
@@ -90,8 +90,7 @@ public class ServerConnectionHandler implements Runnable {
 				// password
 				// (storepass)
 				ts.load(new FileInputStream("lib_server/servertruststore"), password); // truststore
-																						// password
-																						// (storepass)
+																						// password														// (storepass)
 				kmf.init(ks, password); // certificate password (keypass)
 				tmf.init(ts); // possible to use keystore as truststore here
 				ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
@@ -106,7 +105,8 @@ public class ServerConnectionHandler implements Runnable {
 		return null;
 	}
 
-	private String handleInput(String clientMsg) {
+	private String handleInput(String clientMsg, String subject) {
+		
 		return "you get nothing! hahahahaha";
 
 	}

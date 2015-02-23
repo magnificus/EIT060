@@ -22,22 +22,22 @@ public class AccountHandler {
 	/**
 	 * 
 	 * @param password
-	 * @param användarinfosomjagförtillfälletskiteri
+	 * @param anvï¿½ndarinfosomjagfï¿½rtillfï¿½lletskiteri
 	 * @return
 	 */
-	public boolean createNewAccount(String password, String användarinfo){
+	public boolean createNewAccount(String password, String anvandarinfo){
 		
 		
 		byte[] salt = generateSaltValue();
 		byte[] hash = hash(password, salt);
 		
-		//användarInfo, salt, hash sparas i databas på något sätt
+		//anvï¿½ndarInfo, salt, hash sparas i databas pï¿½ nï¿½got sï¿½tt
 		
 		return true;
 	}
 	
 	/**
-	 * autentiserar användaren
+	 * autentiserar anvï¿½ndaren
 	 * @param userId
 	 * @param password
 	 * @return
@@ -47,9 +47,9 @@ public class AccountHandler {
 		byte[] salt= null;
 		byte[] hashStored = null;
 		
-		//med hjälp av userId hämtas salt och hashat lösen från databas
+		//med hjï¿½lp av userId hï¿½mtas salt och hashat lï¿½sen frï¿½n databas
 		
-		//hash räknas ut med hjälp av salt och password
+		//hash rï¿½knas ut med hjï¿½lp av salt och password
 		byte[] hash = hash(password, salt);
 		
 		//kollar om de e samma
@@ -64,7 +64,7 @@ public class AccountHandler {
 	
 
 	/**
-	 * genererar ett nytt salt värde
+	 * genererar ett nytt salt vï¿½rde
 	 * @return
 	 */
 	private byte[] generateSaltValue() {
@@ -76,10 +76,10 @@ public class AccountHandler {
 
 
 	/**
-	 * använder PBKDF för att hasha fram ett hashvärde mha av saltet och
-	 * lösenordet. se
-	 * https://crackstation.net/hashing-security.htm#javasourcecode för exempel
-	 * Har inte själv full koll på det riktigt
+	 * anvï¿½nder PBKDF fï¿½r att hasha fram ett hashvï¿½rde mha av saltet och
+	 * lï¿½senordet. se
+	 * https://crackstation.net/hashing-security.htm#javasourcecode fï¿½r exempel
+	 * Har inte sjï¿½lv full koll pï¿½ det riktigt
 	 * @param password
 	 * @param salt
 	 * @return

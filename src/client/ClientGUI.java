@@ -16,10 +16,9 @@ import javax.net.ssl.SSLSocket;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-
-import com.sun.glass.events.WindowEvent;
 
 public class ClientGUI extends JFrame implements ActionListener, WindowListener {
 	private JPanel panel;
@@ -31,8 +30,14 @@ public class ClientGUI extends JFrame implements ActionListener, WindowListener 
 	private ClientConnectionHandler connection;
 	private BufferedReader read;
 	private SSLSocket socket;
+	
+	
+	public String getPassword(){
+		String password = JOptionPane.showInputDialog("Enter password");
+		return password;
+	}
 
-	public ClientGUI (ClientConnectionHandler connection, BufferedReader read, PrintWriter out, BufferedReader in, SSLSocket socket)  {
+	public void openConsole (BufferedReader read, PrintWriter out, BufferedReader in, SSLSocket socket)  {
 		
 		this.out = out;
 		this.in = in;
