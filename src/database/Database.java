@@ -268,7 +268,7 @@ public class Database {
 		return "Filen finns ej";
 	}
 
-	public boolean dbContainsFile(String filename) {
+	private boolean dbContainsFile(String filename) {
 		try {
 			String sql = "select name from journals where name = ? ";
 			stmt = conn.prepareStatement(sql);
@@ -291,7 +291,7 @@ public class Database {
 		return false;
 	}
 
-	public int getClearance(String userId) {
+	private int getClearance(String userId) {
 		int i = -1;
 		try {
 			String sql = "select clearance from user where pNbr = ?";
@@ -310,7 +310,7 @@ public class Database {
 		return i;
 	}
 
-	public String getGroup(String userId) {
+	private String getGroup(String userId) {
 		String s = "";
 		try {
 			String sql = "select groupName from user where pNbr =?";
