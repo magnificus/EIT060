@@ -93,6 +93,8 @@ public class ClientGUI extends JFrame implements ActionListener,
 		out.println(input.getText());
 		out.flush();
 
+		 output.setText("Awaiting response...");
+		
 		// then wait for response
 		try {
 			output.setText("Response: " + in.readLine());

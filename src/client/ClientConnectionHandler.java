@@ -71,6 +71,7 @@ public class ClientConnectionHandler {
 			BufferedReader read = new BufferedReader(new InputStreamReader(System.in));
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 			BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			
 			gui.openConsole(read, out, in, socket);
 
 			

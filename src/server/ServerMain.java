@@ -5,14 +5,10 @@ import java.nio.channels.SocketChannel;
 import java.security.*;
 
 public class ServerMain {
-	
-	public ServerMain(){
-		ServerConnectionHandler.init(null);
-		
-	}
 
-	public static void main(String[] args) {
+	public static void init() {
 		printOutInterestingInfo();
+		ServerConnectionHandler.init(null);
 
 	}
 
