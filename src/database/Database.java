@@ -259,12 +259,24 @@ public class Database {
 	private String deleteFile(String userId) {
 		System.out.println("File name:");
 		String fileName = scan.next();
-		return null;
+		if(dbContainsFile(fileName)){
+		try {
+		String sql = "delete from journals journals where name = ? ";
+		stmt = conn.prepareStatement(sql);
+		stmt.setString(1, fileName);
+		int i = stmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return fileName + " har tagits bort";
+		}
+		return "Filen finns ej";
 	}
 
 	public boolean dbContainsFile(String filename) {
 		try {
-			String sql = "select name from jornals where name = ? ";
+			String sql = "select name from journals where name = ? ";
 			stmt = conn.prepareStatement(sql);
 			stmt.setString(1, filename);
 			rs = stmt.executeQuery();
@@ -285,9 +297,7 @@ public class Database {
 		return false;
 	}
 
-	private boolean logIn(String user, String password) {
-		return false;
-	}
+	
 
 	public int getClearance(String userId) {
 		int i = -1;
