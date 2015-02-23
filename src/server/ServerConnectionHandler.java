@@ -122,7 +122,7 @@ public class ServerConnectionHandler implements Runnable {
 	private String handleInput(String clientMsg, String subject) {
 		
 
-		return db.Command(clientMsg, "9206243694");
+		return db.Command(clientMsg, "0123456789");
 
 	}
 }
