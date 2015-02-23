@@ -252,17 +252,18 @@ public class Database {
 
 	private String deleteFile(String userId, String[] commands) {
 		String fileName = commands[1];
+		int i = -20;
 		if (dbContainsFile(fileName)) {
 			try {
-				String sql = "delete from journals journals where name = ? ";
+				String sql = "delete from journals where name = ? ";
 				stmt = conn.prepareStatement(sql);
 				stmt.setString(1, fileName);
-				int i = stmt.executeUpdate();
+				 i = stmt.executeUpdate();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return fileName + " har tagits bort";
+			return fileName + " har tagits bort ";
 		}
 		return "Filen finns ej";
 	}
@@ -278,7 +279,7 @@ public class Database {
 				s = rs.getString(1);
 
 			}
-			if (s == filename) {
+			if (s.equals(filename)) {
 
 				return true;
 			}
