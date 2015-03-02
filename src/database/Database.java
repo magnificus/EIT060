@@ -56,14 +56,14 @@ public class Database {
 			Class.forName("com.mysql.jdbc.Driver");
 			// Använd denna sever för att testa programet på egnen dator.
 			
-			// conn = DriverManager.getConnection(
-			// "jdbc:mysql://puccini.cs.lth.se/" + userName, userName,
-			// password);
+			 conn = DriverManager.getConnection(
+			 "jdbc:mysql://puccini.cs.lth.se/" + userName, userName,
+			 password);
 
 			// komentera bort ifall du vill testa det över,
-			String url = "jdbc:MySql://localhost:3306/databaseName";
-			conn = DriverManager.getConnection(
-					"jdbc:MySql://localhost:3306/Datasakerhet", "root", "");
+//			String url = "jdbc:MySql://localhost:3306/databaseName";
+//			conn = DriverManager.getConnection(
+//					"jdbc:MySql://localhost:3306/Datasakerhet", "root", "");
 
 		} catch (SQLException e) {
 			e.printStackTrace();
