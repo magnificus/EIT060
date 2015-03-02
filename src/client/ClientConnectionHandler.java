@@ -29,27 +29,37 @@ public class ClientConnectionHandler {
 			SSLSocketFactory factory = null;
 			try {
 				char[] password = gui.getPassword().toCharArray();
-				
-				
+
 				KeyStore ks = KeyStore.getInstance("JKS");
 				KeyStore ts = KeyStore.getInstance("JKS");
-				KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-				TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+				KeyManagerFactory kmf = KeyManagerFactory
+						.getInstance("SunX509");
+				TrustManagerFactory tmf = TrustManagerFactory
+						.getInstance("SunX509");
 				SSLContext ctx = SSLContext.getInstance("TLS");
-				ks.load(new FileInputStream("lib_client/clientkeystore"), password); // keystore
-																						// password
-																						// (storepass)
-				ts.load(new FileInputStream("lib_client/clienttruststore"), password); // truststore
-																						// password
-																						// (storepass);
+				ks.load(new FileInputStream("lib_client/clientkeystore"),
+						password); // keystore
+									// password
+									// (storepass)
+				ts.load(new FileInputStream("lib_client/clienttruststore"),
+						password); // truststore
+									// password
+									// (storepass);
 				kmf.init(ks, password); // user password (keypass)
 				tmf.init(ts); // keystore can be used as truststore here
 				ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
 				factory = ctx.getSocketFactory();
-			} catch (IOException e) {
+			} catch (FileNotFoundException e) {
+				JOptionPane
+						.showMessageDialog(null,
+								"File clienttruststore or clientkeystore not found in \"lib_client\"");
+				System.exit(0);
+			} catch (Exception e) {
 				JOptionPane.showMessageDialog(null, "Wrong password!");
 				System.exit(0);
+
 			}
+
 			SSLSocket socket = (SSLSocket) factory.createSocket(host, port);
 			System.out.println("\nsocket before handshake:\n" + socket + "\n");
 
@@ -62,19 +72,23 @@ public class ClientConnectionHandler {
 			socket.startHandshake();
 
 			SSLSession session = socket.getSession();
-			X509Certificate cert = (X509Certificate) session.getPeerCertificateChain()[0];
+			X509Certificate cert = (X509Certificate) session
+					.getPeerCertificateChain()[0];
 			String subject = cert.getSubjectDN().getName();
-			System.out.println("certificate name (subject DN field) on certificate received from server:\n" + subject + "\n");
+			System.out
+					.println("certificate name (subject DN field) on certificate received from server:\n"
+							+ subject + "\n");
 			System.out.println("socket after handshake:\n" + socket + "\n");
 			System.out.println("secure connection established\n\n");
 
-			BufferedReader read = new BufferedReader(new InputStreamReader(System.in));
+			BufferedReader read = new BufferedReader(new InputStreamReader(
+					System.in));
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-			BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					socket.getInputStream()));
+
 			gui.openConsole(read, out, in, socket);
 
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -89,7 +103,5 @@ public class ClientConnectionHandler {
 		// TODO Auto-generated method stub
 
 	}
-
-
 
 }
