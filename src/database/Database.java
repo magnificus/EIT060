@@ -54,14 +54,16 @@ public class Database {
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			//Använd denna sever för att testa programet på egna datorn
-//			conn = DriverManager.getConnection(
-//					"jdbc:mysql://puccini.cs.lth.se/" + userName, userName,
-//					password);
+			// Använd denna sever för att testa programet på egnen dator.
 			
-			//komentera bort ifall du vill testa det över
-			 String url = "jdbc:MySql://localhost:3306/databaseName";
-			 conn = DriverManager.getConnection("jdbc:MySql://localhost:3306/Datasakerhet","root","");
+			// conn = DriverManager.getConnection(
+			// "jdbc:mysql://puccini.cs.lth.se/" + userName, userName,
+			// password);
+
+			// komentera bort ifall du vill testa det över,
+			String url = "jdbc:MySql://localhost:3306/databaseName";
+			conn = DriverManager.getConnection(
+					"jdbc:MySql://localhost:3306/Datasakerhet", "root", "");
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -260,7 +262,7 @@ public class Database {
 				String sql = "delete from journals where name = ? ";
 				stmt = conn.prepareStatement(sql);
 				stmt.setString(1, fileName);
-				 i = stmt.executeUpdate();
+				i = stmt.executeUpdate();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
