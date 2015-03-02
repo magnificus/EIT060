@@ -18,6 +18,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 public class ClientGUI extends JFrame implements ActionListener,
@@ -32,7 +33,13 @@ public class ClientGUI extends JFrame implements ActionListener,
 	private SSLSocket socket;
 
 	public String getPassword() {
-		String password = JOptionPane.showInputDialog("Enter password");
+		String password = null;
+		JPasswordField pf = new JPasswordField();
+		int okCxl = JOptionPane.showConfirmDialog(null, pf, "Enter Password", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+		if (okCxl == JOptionPane.OK_OPTION) {
+		  password = new String(pf.getPassword());
+		}
 		return password;
 	}
 
