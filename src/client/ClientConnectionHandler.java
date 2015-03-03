@@ -69,8 +69,7 @@ public class ClientConnectionHandler {
 			 * See SSLSocketClient.java for more information about why there is
 			 * a forced handshake here when using PrintWriters.
 			 */
-			socket.startHandshake();
-
+			socket.startHandshake();	
 			SSLSession session = socket.getSession();
 			X509Certificate cert = (X509Certificate) session
 					.getPeerCertificateChain()[0];
