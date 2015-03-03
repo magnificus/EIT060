@@ -20,3 +20,11 @@ User: 0000000000 Message: asdasdasdasd Time: 1425395254828
 User: 0000000000 Message: asdasdasdasdas Time: 1425395254956
 User: 0000000000 Message: asdasdasdasdasd Time: 1425395255073
 User: 0000000000 Message: read: Time: 1425395257594
+User: 0000000000 Message: asd Time: 1425396377859
+User: 0000000000 Message: read:123 Time: 1425396380320
+User: 0000000000 Message: read:1 Time: 1425396381752
+User: 0000000000 Message: read:jur1 Time: 1425396383816
+User: 0000000000 Message: read:jor1 Time: 1425396385951
+User: 0000000000 Message: read:jour1 Time: 1425396388309
+User: 0000000000 Message: read:1 Time: 1425396399815
+User: 0000000000 Message: read:nyfil Time: 1425396401728
