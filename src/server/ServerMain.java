@@ -25,9 +25,6 @@ public class ServerMain {
 			System.exit(1);
 		}
 		System.out.println("JSSE is installed correctly!");
-		String trustStore = System.getProperty("javax.net.ssl.trustStore");
-		if (trustStore == null)
-			System.out.println("javax.net.ssl.trustStore is not defined");
 	}
 
 }
