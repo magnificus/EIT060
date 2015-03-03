@@ -93,15 +93,4 @@ public class ClientConnectionHandler {
 			e.printStackTrace();
 		}
 	}
-
-	private String getPassword() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void send(String text) {
-		// TODO Auto-generated method stub
-
-	}
-
 }

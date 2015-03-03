@@ -7,6 +7,7 @@ import java.security.KeyStore;
 import javax.net.*;
 import javax.net.ssl.*;
 import javax.security.cert.X509Certificate;
+import javax.swing.JOptionPane;
 
 import database.Database;
 
@@ -111,7 +112,9 @@ public class ServerConnectionHandler implements Runnable {
 				ssf = ctx.getServerSocketFactory();
 				return ssf;
 			} catch (Exception e) {
-				e.printStackTrace();
+				JOptionPane
+				.showMessageDialog(null,
+						"File servertruststore or serverkeystore not found in \"lib_server\" or password was incorrect");
 			}
 		} else {
 			return ServerSocketFactory.getDefault();
@@ -121,7 +124,7 @@ public class ServerConnectionHandler implements Runnable {
 
 	private String handleInput(String clientMsg, String subject) {
 
-		String user = subject.split("\"")[1];
+		String user = subject.split("=")[1];
 
 		return db.Command(clientMsg, user);
 
