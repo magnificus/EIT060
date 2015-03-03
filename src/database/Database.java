@@ -154,6 +154,7 @@ public class Database {
 		} else {
 			clear = true;
 		}
+		if(dbContainsFile(filename)){
 		if (clear) {
 			String file = "";
 			try {
@@ -174,6 +175,9 @@ public class Database {
 		}
 
 		return "Något blev fel";
+	}else{
+		return "Filen finns ej";
+	}
 	}
 
 	private String writeFile(String userId, String[] commands) {
@@ -330,10 +334,6 @@ public class Database {
 			e.printStackTrace();
 		}
 		return s;
-	}
-
-	private void log(String log) {
-
 	}
 
 }

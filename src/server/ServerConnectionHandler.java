@@ -123,9 +123,13 @@ public class ServerConnectionHandler implements Runnable {
 	}
 
 	private String handleInput(String clientMsg, String subject) {
-
 		String user = subject.split("=")[1];
-
+		try {
+			Logger.getInstance().log(user, clientMsg);
+		} catch (IOException e) {
+			System.out.println("problems logging");
+			e.printStackTrace();
+		}
 		return db.Command(clientMsg, user);
 
 	}

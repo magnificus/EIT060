@@ -8,8 +8,16 @@ import java.io.PrintWriter;
 
 public class Logger {
 	private static final String defaultPath = "log.txt";
+	private static Logger logger;
 
-	public Logger() {
+	private Logger() {
+	}
+
+	public static Logger getInstance() {
+		if (logger == null) {
+			logger = new Logger();
+		}
+		return logger;
 	}
 
 	public synchronized void log(String user, String message)
